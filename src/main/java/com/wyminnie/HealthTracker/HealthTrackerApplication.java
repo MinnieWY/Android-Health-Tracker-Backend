@@ -1,13 +1,13 @@
-package com.wyminnie.HealthTracker;
+package com.wyminnie.healthtracker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class HealthTrackerApplication {
+public class HealthtrackerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HealthTrackerApplication.class, args);
+		SpringApplication.run(HealthtrackerApplication.class, args);
 	}
 
 }

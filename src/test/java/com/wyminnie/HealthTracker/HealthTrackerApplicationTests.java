@@ -1,10 +1,10 @@
-package com.wyminnie.HealthTracker;
+package com.wyminnie.healthtracker;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HealthTrackerApplicationTests {
+class HealthtrackerApplicationTests {
 
 	@Test
 	void contextLoads() {

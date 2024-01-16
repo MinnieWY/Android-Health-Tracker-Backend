@@ -1,4 +1,4 @@
-package com.wyminnie.healthtracker.base.acm.user;
+package com.wyminnie.healthtracker.base.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -14,6 +14,9 @@ public class User {
     @Id
     protected Long id;
     private String username;
+    private String email;
     private String userPW;
+    private String accessToken;
+    private String refreashToken;
 
 }

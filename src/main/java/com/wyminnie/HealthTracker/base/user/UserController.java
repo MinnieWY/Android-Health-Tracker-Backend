@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import com.wyminnie.healthtracker.common.ControllerUtils;
 
 import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
 import static com.wyminnie.healthtracker.common.ControllerUtils.duplicatedUsername;
+import static com.wyminnie.healthtracker.common.ControllerUtils.notFound;
 import static com.wyminnie.healthtracker.common.ControllerUtils.serverError;
 import static com.wyminnie.healthtracker.common.ControllerUtils.userValid;
 
@@ -99,6 +101,11 @@ public class UserController {
             e.printStackTrace();
         }
         return "failure";
+    }
 
+    @GetMapping("/{userId}")
+    public Optional<UserDTO> getUserById(@PathVariable String userId) {
+        // Fetch the user information from the database using the userId
+        return userService.findUserById(Long.valueOf(userId));
     }
 }

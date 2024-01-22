@@ -2,8 +2,6 @@ package com.wyminnie.healthtracker.base.user;
 
 import java.util.Optional;
 
-import org.springframework.web.servlet.ModelAndView;
-
 public interface UserService {
 
     User findByUsername(String username);
@@ -16,4 +14,6 @@ public interface UserService {
     boolean verifyUserCredentials(String username, String password);
 
     void saveOrUpdate(User user);
+
+    Optional<UserDTO> findUserById(Long userId);
 }

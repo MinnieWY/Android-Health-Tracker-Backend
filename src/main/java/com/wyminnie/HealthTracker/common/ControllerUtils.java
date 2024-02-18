@@ -31,17 +31,17 @@ public class ControllerUtils {
     }
 
     public static Object ok(Object data, Object metadata) {
-        if (data instanceof Page) {
+        if (data instanceof Page page) {
             Map<String, Object> pageDto = new HashMap<>();
-            pageDto.put("content", ((Page<?>) data).getContent());
-            if (((Page<?>) data).getPageable().isUnpaged()) {
+            pageDto.put("content", page.getContent());
+            if (page.getPageable().isUnpaged()) {
                 pageDto.put("currentPage", 0);
                 pageDto.put("totalPages", 1);
-                pageDto.put("totalElements", ((Page<?>) data).getTotalElements());
+                pageDto.put("totalElements", page.getTotalElements());
             } else {
-                pageDto.put("currentPage", ((Page<?>) data).getPageable().getPageNumber());
-                pageDto.put("totalPages", ((Page<?>) data).getTotalPages());
-                pageDto.put("totalElements", ((Page<?>) data).getTotalElements());
+                pageDto.put("currentPage", page.getPageable().getPageNumber());
+                pageDto.put("totalPages", page.getTotalPages());
+                pageDto.put("totalElements", page.getTotalElements());
             }
 
             return wrapJsonResponse(pageDto, null, metadata);

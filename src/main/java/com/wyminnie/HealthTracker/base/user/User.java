@@ -12,10 +12,10 @@ import lombok.Setter;
 @Table(name = "user")
 public class User {
     @Id
-    protected Long id;
+    private Long id;
     private String username;
     private String email;
-    private String userPW;
+    private String password;
     private String accessToken;
     private String refreashToken;
 

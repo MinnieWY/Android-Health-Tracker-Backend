@@ -66,7 +66,7 @@ public class UserController {
 
     @GetMapping("/callback")
     public String handleCallback(@RequestParam("code") String authorizationCode,
-            @RequestParam("state") String state, Model model) {
+            @RequestParam String state, Model model) {
 
         OAuth20Service service = fitbitOAuthService.getOAuthService();
 
@@ -84,16 +84,18 @@ public class UserController {
             user.setRefreashToken(fitbitRefreashToken);
             userService.saveOrUpdate(user);
 
-            String htmlResponse = "<html>"
-                    + "<head>"
-                    + "<title>Fitbit Authorization Complete</title>"
-                    + "</head>"
-                    + "<body>"
-                    + "<h1>Fitbit Authorization Complete</h1>"
-                    + "<p>The authorization process is complete.</p>"
-                    + "<a href=\"ht2024://login\">Click here</a> to redirect back to the application."
-                    + "</body>"
-                    + "</html>";
+            String htmlResponse = """
+                    <html>\
+                    <head>\
+                    <title>Fitbit Authorization Complete</title>\
+                    </head>\
+                    <body>\
+                    <h1>Fitbit Authorization Complete</h1>\
+                    <p>The authorization process is complete.</p>\
+                    <a href="ht2024://login">Click here</a> to redirect back to the application.\
+                    </body>\
+                    </html>\
+                    """;
 
             return htmlResponse;
 
@@ -104,8 +106,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public Optional<UserDTO> getUserById(@PathVariable String userId) {
-        // Fetch the user information from the database using the userId
+    public Optional<User> getUserById(@PathVariable String userId) {
         return userService.findUserById(Long.valueOf(userId));
     }
 }

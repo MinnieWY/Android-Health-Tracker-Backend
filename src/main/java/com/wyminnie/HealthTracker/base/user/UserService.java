@@ -7,7 +7,9 @@ public interface UserService {
 
     User findByUsername(String username);
 
-    Optional<User> createUser(UserRegistrationDto registrationDto)
+    User findByUserId(Long userId);
+
+    Optional<UserDTO> createUser(UserRegistrationDto registrationDto)
             throws DuplicateUsernameException, UserValidException;
 
     boolean authorizeAccess();

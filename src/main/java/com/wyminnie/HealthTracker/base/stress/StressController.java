@@ -3,18 +3,22 @@ package com.wyminnie.healthtracker.base.stress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.wyminnie.healthtracker.base.user.User;
 import com.wyminnie.healthtracker.base.user.UserService;
 
+@RestController
+@RequestMapping("/stress")
 public class StressController {
     @Autowired
     private StressService stressService;
     @Autowired
     UserService userService;
 
-    @PostMapping("/stress/input")
+    @PostMapping("/input")
     public ResponseEntity<StressDTO> inputStressData(@RequestParam("userId") String userId,
             @RequestParam("date") String date,
             @RequestParam("stressLevel") int stressLevel) {

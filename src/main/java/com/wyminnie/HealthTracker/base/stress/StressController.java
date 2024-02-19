@@ -43,4 +43,11 @@ public class StressController {
         return ResponseEntity.ok(stress_record);
     }
 
+    @GetMapping("/prediction")
+    public ResponseEntity<Integer> getMethodName(@RequestParam("userId") String userId) {
+        User user = userService.findByUsername(userId);
+
+        return ResponseEntity.ok(stressService.predictStressLevel(user.getAccessToken()));
+    }
+
 }

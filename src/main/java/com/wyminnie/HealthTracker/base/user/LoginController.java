@@ -22,25 +22,19 @@ public class LoginController {
 
     @PostMapping("/login")
     public Object login(@RequestBody UserLoginDto userLoginDto) {
-        return userService.findByUsername("admin");
-        // Optional<User> loginUser =
-        // userService.findByUsername(userLoginDto.getUsername());
 
-        // if (loginUser.isEmpty()) {
-        // return ControllerUtils.passwordMismatched();
-        // } else {
-        // if (userService.verifyUserCredentials(loginUser.get().getUsername(),
-        // userLoginDto.getPassword())) {
-        // return ControllerUtils.ok(loginUser);
-        // } else {
-        // return ControllerUtils.passwordMismatched();
-        // }
-        // }
+        User loginUser = userService.findByUsername(userLoginDto.getUsername());
+
+        if (loginUser == null) {
+            return ControllerUtils.passwordMismatched();
+        } else {
+            if (userService.verifyUserCredentials(loginUser,
+                    userLoginDto.getPassword())) {
+                return ControllerUtils.ok(userService.updateAccessToken(loginUser));
+            } else {
+                return ControllerUtils.passwordMismatched();
+            }
+        }
     }
-
-    // @GetMapping("/here")
-    // public Optional<User> getMethodName() {
-    // return userService.findByUsername("admin");
-    // }
 
 }

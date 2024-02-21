@@ -9,6 +9,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import reactor.core.publisher.Mono;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -46,25 +51,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean verifyUserCredentials(String username, String password) {
-        // Long userId = findByUsername(username).get().getId();
-
-        // return findByUsername(username)
-        // .filter(user -> user.isDataStatusActive())
-        // .filter(user -> {
-        // boolean matched = encoder.matches(password, user.getPassword());
-
-        // if (!matched) {
-        // userService.increaseFailAttempt(user.getId());
-        // }
-
-        // return matched;
-        // })
-        // .map(user -> {
-        // userService.resetFailAttempt(user.getId());
-
-        // });
-        return true;
+    public boolean verifyUserCredentials(User user, String password) {
+        if (user.getUserPW().equals(password)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Optional<UserDTO> findUserDTOById(Long id) {
@@ -111,4 +103,29 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean updatePreference(User user, String preference) {
+        user.setPreference(preference);
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    public UserDTO updateAccessToken(User user) {
+
+        Mono<FitbitRefreash> refreashTokenMono = getFitbitRefreashToken(user.getRefreashToken());
+        FitbitRefreash refreashData = refreashTokenMono.block();
+        user.setAccessToken(refreashData.getAccess_token());
+        user.setRefreashToken(refreashData.getRefresh_token());
+        User savedUser = userRepository.saveAndFlush(user);
+        return UserDTO.from(savedUser);
+    }
+
+    private Mono<FitbitRefreash> getFitbitRefreashToken(String refreshToken) {
+        WebClient webClient = WebClient.create("https://api.fitbit.com/oauth2/token");
+        return webClient.post().header("Content-Type", "application/json")
+                .body(BodyInserters.fromFormData("grant_type", "refresh_token")
+                        .with("refresh_token", refreshToken).with("client_id", "23R9K4"))
+                .retrieve().bodyToMono(FitbitRefreash.class);
+    }
 }

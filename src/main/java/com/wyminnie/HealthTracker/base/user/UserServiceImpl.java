@@ -88,8 +88,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updatePreference(User user, int preference) {
-        user.setPrefernce(preference);
+    public boolean updatePreference(User user, String preference) {
+        user.setPreference(preference);
         userRepository.save(user);
         return true;
     }

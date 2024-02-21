@@ -18,7 +18,7 @@ public class UserDTO {
         dto.id = entity.getId();
         dto.username = entity.getUsername();
         dto.email = entity.getEmail();
-        dto.prefernce = entity.getPrefernce();
+        dto.prefernce = entity.getPreference();
 
         return dto;
     }

@@ -28,7 +28,7 @@ public class RecommendationController {
 
     @PostMapping("/update-preference")
     public ResponseEntity<String> saveUserPreference(@RequestParam("userId") String userId,
-            @RequestParam("preference") int preference) {
+            @RequestParam("preference") String preference) {
 
         User user = userService.findByUserId(Long.valueOf(userId));
         if (user == null) {

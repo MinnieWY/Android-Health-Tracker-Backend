@@ -19,5 +19,5 @@ public interface UserService {
 
     Optional<UserDTO> findUserById(Long userId);
 
-    boolean updatePreference(User user, int preference);
+    boolean updatePreference(User user, String preference);
 }

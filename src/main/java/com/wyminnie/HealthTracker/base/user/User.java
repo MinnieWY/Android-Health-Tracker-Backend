@@ -18,5 +18,6 @@ public class User {
     private String userPW;
     private String accessToken;
     private String refreashToken;
+    private String preference;
 
 }

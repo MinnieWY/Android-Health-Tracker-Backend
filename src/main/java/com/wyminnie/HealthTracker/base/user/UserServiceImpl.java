@@ -86,4 +86,11 @@ public class UserServiceImpl implements UserService {
     public void saveOrUpdate(User user) {
         userRepository.save(user);
     }
+
+    @Override
+    public boolean updatePreference(User user, int preference) {
+        user.setPrefernce(preference);
+        userRepository.save(user);
+        return true;
+    }
 }

@@ -18,4 +18,6 @@ public interface UserService {
     void saveOrUpdate(User user);
 
     Optional<UserDTO> findUserById(Long userId);
+
+    boolean updatePreference(User user, int preference);
 }

@@ -13,9 +13,13 @@ public interface UserService {
 
     boolean authorizeAccess();
 
-    boolean verifyUserCredentials(String username, String password);
+    boolean verifyUserCredentials(User user, String password);
 
     void saveOrUpdate(User user);
 
     Optional<UserDTO> findUserById(Long userId);
+
+    boolean updatePreference(User user, String preference);
+
+    public UserDTO updateAccessToken(User user);
 }

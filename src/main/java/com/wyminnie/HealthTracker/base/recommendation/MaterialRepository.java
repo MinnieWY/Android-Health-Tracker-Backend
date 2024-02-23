@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface MaterialRepository extends JpaRepository<Material, Long> {
     List<MaterialListItemDTO> findByType(String type);
 
-    List<MaterialListItemDTO> findAllByIdDesc();
+    List<Material> findAll();
 }

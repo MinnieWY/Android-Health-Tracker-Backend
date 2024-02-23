@@ -1,6 +1,7 @@
 package com.wyminnie.healthtracker.base.recommendation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     public List<MaterialListItemDTO> getMaterialsList() {
-        return materialRepository.findAllByIdDesc();
+        return materialRepository.findAll().stream().map(MaterialListItemDTO::from).collect(Collectors.toList());
     }
 
     @Override

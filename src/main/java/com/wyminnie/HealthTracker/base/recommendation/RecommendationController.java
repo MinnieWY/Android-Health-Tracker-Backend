@@ -1,22 +1,20 @@
 package com.wyminnie.healthtracker.base.recommendation;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.wyminnie.healthtracker.base.user.User;
 import com.wyminnie.healthtracker.base.user.UserService;
+import com.wyminnie.healthtracker.common.UserIDDTO;
 
 @RequestMapping("/recommendation")
 @RestController
@@ -27,24 +25,23 @@ public class RecommendationController {
     UserService userService;
 
     @PostMapping("/update-preference")
-    public ResponseEntity<String> saveUserPreference(@RequestParam("userId") String userId,
-            @RequestParam("preference") String preference) {
+    public ResponseEntity<String> saveUserPreference(@RequestBody UpdatePreferenceDTO updatePreferenceDTO) {
 
-        User user = userService.findByUserId(Long.valueOf(userId));
+        User user = userService.findByUserId(Long.valueOf(updatePreferenceDTO.getUserId()));
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
-        if (userService.updatePreference(user, preference)) {
+        if (userService.updatePreference(user, updatePreferenceDTO.getPreference())) {
             return ResponseEntity.ok("User preference updated successfully");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User preference update failed");
         }
     }
 
-    @GetMapping("/recommneded-materials")
+    @PostMapping("/recommneded-materials")
     public ResponseEntity<List<MaterialListItemDTO>> getRecommendedMaterials(
-            @RequestParam(name = "userId") String userId) {
-        User user = userService.findByUserId(Long.valueOf(userId));
+            @RequestBody UserIDDTO recommendMaterialDTO) {
+        User user = userService.findByUserId(Long.valueOf(recommendMaterialDTO.getUserId()));
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -58,8 +55,8 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendationService.getMaterialsList());
     }
 
-    @GetMapping("path")
-    public MaterialDTO getMaterial(@RequestParam("id") String materialId) {
+    @GetMapping(value = "/{materialId}")
+    public MaterialDTO getMaterial(@PathVariable("materialId") String materialId) {
         return recommendationService.getMaterialById(Long.valueOf(materialId));
     }
 

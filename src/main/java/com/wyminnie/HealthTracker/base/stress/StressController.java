@@ -32,6 +32,13 @@ public class StressController {
         return ResponseEntity.ok(savedRecord);
     }
 
+    @GetMapping("/today")
+    public ResponseEntity<Integer> getTodayStress(@RequestParam("userId") String userId) {
+        User user = userService.findByUsername(userId);
+
+        return ResponseEntity.ok(stressService.getTodayStress(user.getId()));
+    }
+
     @GetMapping("/weekly")
     public ResponseEntity<Map<String, Integer>> getWeeklyStress(@RequestParam("userId") String userId,
             @RequestParam("date") String date) {

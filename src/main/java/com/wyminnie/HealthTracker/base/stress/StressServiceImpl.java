@@ -49,6 +49,12 @@ public class StressServiceImpl implements StressService {
     }
 
     @Override
+    public int getTodayStress(long userId) {
+        String currentDate = java.time.LocalDate.now().toString();
+        return stressRepository.findByUserIdAndDate(userId, currentDate).getStressLevel();
+    }
+
+    @Override
     public int predictStressLevel(String accessToken) {
         BodyInserters.FormInserter<String> requestBody = BodyInserters
                 .fromFormData("accessToken", accessToken);

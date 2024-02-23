@@ -18,12 +18,12 @@ public interface UserService {
 
     void saveOrUpdate(User user);
 
-    Optional<UserDTO> findUserById(Long userId);
+    Optional<UserDTO> findUserDTOById(Long userId);
 
     Optional<User> findUserById(Long userId);
 
     public List<UserListItemDTO> searchUsers(String query);
-    
+
     boolean updatePreference(User user, String preference);
 
     public UserDTO updateAccessToken(User user);

@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Override
-    public Optional<User> createUser(UserRegistrationDto userRegistrationDto)
+    public Optional<UserDTO> createUser(UserRegistrationDto userRegistrationDto)
             throws DuplicateUsernameException, UserValidException {
         User duplicateUsernameUser = findByUsername(userRegistrationDto.getUsername());
 
@@ -40,9 +40,9 @@ public class UserServiceImpl implements UserService {
         entity.setEmail(userRegistrationDto.getEmail());
         entity.setPassword(userRegistrationDto.getPassword());
 
-        final User finalEntity = userRepository.save(entity);
+        final User finalEntity = userRepository.saveAndFlush(entity);
 
-        return findUserById(finalEntity.getId());
+        return findUserDTOById(finalEntity.getId());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean verifyUserCredentials(User user, String password) {
-        if (user.getUserPW().equals(password)) {
+        if (user.getPassword().equals(password)) {
             return true;
         } else {
             return false;

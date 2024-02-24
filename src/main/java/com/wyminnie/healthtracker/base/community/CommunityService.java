@@ -11,4 +11,6 @@ public interface CommunityService {
     public boolean isFriend(Optional<User> currentUser, Optional<User> targetUser);
 
     public QuestionDTO getTodayQuestion();
+
+    public QuizRecord submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user);
 }

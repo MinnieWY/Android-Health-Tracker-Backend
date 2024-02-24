@@ -11,12 +11,14 @@ public class UserDTO {
     private String username;
     private String email;
     private String password;
+    private int point;
 
     public static UserDTO from(User entity) {
         UserDTO dto = new UserDTO();
         dto.id = entity.getId();
         dto.username = entity.getUsername();
         dto.email = entity.getEmail();
+        dto.point = entity.getPoint();
 
         return dto;
     }

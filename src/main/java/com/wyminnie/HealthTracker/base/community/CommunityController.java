@@ -14,6 +14,8 @@ import com.wyminnie.healthtracker.base.user.UserService;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 public class CommunityController {
@@ -60,5 +62,25 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @GetMapping("/quiz/question")
+    public ResponseEntity<QuestionDTO> getTodayQuestion() {
+        QuestionDTO question = communityService.getTodayQuestion();
+
+        // Return the question in the response
+        if (question != null) {
+            return ResponseEntity.ok(question);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/quiz/answer")
+    public ResponseEntity<QuizRecord> submitQuizAnswer(@RequestBody QuizAnswerDTO answer) {
+        User user = userService.findUserById(Long.parseLong(answer.getUserId())).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(communityService.submitQuizAnswer(answer, user));
+    }
 
 }

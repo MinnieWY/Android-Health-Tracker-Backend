@@ -1,7 +1,13 @@
 package com.wyminnie.healthtracker.base.community;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.glassfish.jaxb.runtime.v2.schemagen.xmlschema.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +19,8 @@ public class CommunityServiceImpl implements CommunityService {
     FriendRepository friendRepository;
     @Autowired
     QuestionRepository questionRepository;
+    @Autowired
+    QuizRecordRepository quizRecordRepository;
 
     @Override
     public boolean addFriendRequest(Optional<User> currentUser, Optional<User> targetUser) throws Exception {
@@ -35,4 +43,42 @@ public class CommunityServiceImpl implements CommunityService {
         return friendRepository.existsByUsers(currentUser, targetUser);
     }
 
+    @Override
+    public QuestionDTO getTodayQuestion() {
+
+        Date currentDate = Date.valueOf(LocalDate.now());
+        Question questions = questionRepository.findOneByDate(currentDate);
+        QuestionDTO questionDTO = new QuestionDTO();
+        questionDTO.setQuestion(questions.getQuestionText());
+        questionDTO.setId(questions.getId());
+        questionDTO
+                .setAnswerOptions(Arrays.asList(questions.getOption1(), questions.getOption2(), questions.getOption3(),
+                        questions.getOption4()).stream().filter(option -> option != null).collect(Collectors.toList()));
+
+        return questionDTO;
+
+    }
+
+    @Override
+    public QuizRecord submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user) {
+        Question answeredQuestion = questionRepository.findById(Long.valueOf(quizAnswerDTO.getQuizId())).orElse(null);
+
+        if (answeredQuestion == null) {
+            throw new RuntimeException("Question not found");
+        }
+
+        boolean isCorrect = checkAnswer(answeredQuestion, quizAnswerDTO.getAnswer());
+        QuizRecord quizRecord = new QuizRecord();
+        quizRecord.setCorrect(isCorrect);
+        quizRecord.setUserId(user.getId());
+        quizRecord.setQuizId(answeredQuestion.getId());
+        quizRecord.setDateAnswered(Date.valueOf(LocalDate.now()));
+
+        return quizRecordRepository.saveAndFlush(quizRecord);
+    }
+
+    private boolean checkAnswer(Question answeredQuestion, int selectedOptions) {
+
+        return answeredQuestion.getAnswer() == selectedOptions;
+    }
 }

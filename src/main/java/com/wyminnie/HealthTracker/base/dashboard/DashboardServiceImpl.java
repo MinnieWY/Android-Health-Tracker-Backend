@@ -1,9 +1,9 @@
 package com.wyminnie.healthtracker.base.dashboard;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -48,7 +48,7 @@ public class DashboardServiceImpl implements DashboardService {
                 argument);
         FitbitHRVInterval fitbitHRVIntervalData = fitbitHRVIntervalMono.block();
 
-        Map<String, Integer> hrvDataMap = new HashMap<>();
+        Map<String, Integer> hrvDataMap = new TreeMap<>();
         if (fitbitHRVIntervalData != null && fitbitHRVIntervalData.getHrv() != null
                 && !fitbitHRVIntervalData.getHrv().isEmpty()) {
             List<FitbitHRVInterval.HRVData> hrvDataList = fitbitHRVIntervalData.getHrv();
@@ -67,7 +67,7 @@ public class DashboardServiceImpl implements DashboardService {
         String startDate = getPreviousWeekDate();
         String endDate = getPreviousDate();
 
-        Map<String, Integer> stepsCountMap = new HashMap<>();
+        Map<String, Integer> stepsCountMap = new TreeMap<>();
 
         LocalDate currentDate = LocalDate.parse(startDate);
         LocalDate endDateInclusive = LocalDate.parse(endDate);

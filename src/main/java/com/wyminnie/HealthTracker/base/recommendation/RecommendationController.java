@@ -38,7 +38,7 @@ public class RecommendationController {
         }
     }
 
-    @PostMapping("/recommneded-materials")
+    @PostMapping("/recommended-materials")
     public ResponseEntity<List<MaterialListItemDTO>> getRecommendedMaterials(
             @RequestBody UserIDDTO recommendMaterialDTO) {
         User user = userService.findByUserId(Long.valueOf(recommendMaterialDTO.getUserId()));

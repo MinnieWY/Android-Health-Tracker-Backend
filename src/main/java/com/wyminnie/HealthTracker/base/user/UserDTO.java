@@ -18,8 +18,11 @@ public class UserDTO {
         dto.id = entity.getId();
         dto.username = entity.getUsername();
         dto.email = entity.getEmail();
-        dto.prefernce = entity.getPreference().trim();
-
+        if (entity.getPreference() != null) {
+            dto.prefernce = entity.getPreference().trim();
+        } else {
+            dto.prefernce = entity.getPreference();
+        }
         return dto;
     }
 }

@@ -18,26 +18,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wyminnie.healthtracker.base.fitbit.FitbitFetchService;
 import com.wyminnie.healthtracker.base.fitbit.FitbitHRVInterval;
-import com.wyminnie.healthtracker.base.fitbit.FitbitOAuthService;
-import com.wyminnie.healthtracker.base.fitbit.FitbitHRVInterval.HRVData;
 import com.wyminnie.healthtracker.base.user.User;
 
 import reactor.core.publisher.Mono;
+import static com.wyminnie.healthtracker.common.Utils.getPreviousDate;
+import static com.wyminnie.healthtracker.common.Utils.getPreviousWeekDate;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private FitbitFetchService fitbitFetchService;
-
-    private String getPreviousDate() {
-        LocalDate currentDate = LocalDate.now();
-        return currentDate.minusDays(1).toString();
-    }
-
-    private String getPreviousWeekDate() {
-        LocalDate currentDate = LocalDate.now();
-        return currentDate.minusDays(7).toString();
-    }
 
     @Override
     public Map<String, Integer> getPreviousWeekHeartRateVariability(User user) {
@@ -63,7 +53,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Map<String, Integer> getPreviousWeekStepsCount(User user)
-            throws JsonMappingException, JsonProcessingException {
+            throws JsonProcessingException {
         String startDate = getPreviousWeekDate();
         String endDate = getPreviousDate();
 

@@ -7,8 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.wyminnie.healthtracker.base.recommendation.MaterialListItemDTO;
+
+import static com.wyminnie.healthtracker.common.Utils.getPreviousWeekDate;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class StressServiceImpl implements StressService {
@@ -24,21 +29,30 @@ public class StressServiceImpl implements StressService {
 
     @Override
     public StressDTO createStressRecord(long userId, String date, int level) {
+        if (stressRepository.findByUserIdAndDate(userId, date) != null) {
+            return null;
+        }
         Stress stressRecord = new Stress();
         stressRecord.setUserId(userId);
         stressRecord.setDate(date);
         stressRecord.setStressLevel(level);
 
-        stressRepository.save(stressRecord);
-        return stressRepository.findByUserIdAndDate(userId, date);
+        final Stress savedRecord = stressRepository.saveAndFlush(stressRecord);
+
+        StressDTO savedStressDTO = new StressDTO();
+        savedStressDTO.setId(savedRecord.getId());
+        savedStressDTO.setStressLevel(savedRecord.getStressLevel());
+        savedStressDTO.setDate(savedRecord.getDate());
+        return savedStressDTO;
     }
 
     @Override
-    public Map<String, Integer> getWeeklyStress(long userId, String date) {
+    public Map<String, Integer> getPreviousWeekStress(long userId) {
+        String startDate = getPreviousWeekDate();
         Map<String, Integer> stressRecord = new HashMap<>();
         for (int i = 0; i < 7; i++) {
-            String dateToCheck = date + "-" + i;
-            StressDTO stress = stressRepository.findByUserIdAndDate(userId, dateToCheck);
+            String dateToCheck = startDate + "-" + i;
+            Stress stress = stressRepository.findByUserIdAndDate(userId, dateToCheck);
             if (stress != null) {
                 stressRecord.put(dateToCheck, stress.getStressLevel());
             } else {
@@ -51,7 +65,11 @@ public class StressServiceImpl implements StressService {
     @Override
     public int getTodayStress(long userId) {
         String currentDate = java.time.LocalDate.now().toString();
-        return stressRepository.findByUserIdAndDate(userId, currentDate).getStressLevel();
+        Stress stress = stressRepository.findByUserIdAndDate(userId, currentDate);
+        if (stress == null) {
+            return 0;
+        }
+        return stress.getStressLevel();
     }
 
     @Override

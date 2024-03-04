@@ -7,7 +7,7 @@ public interface StressService {
 
     int getTodayStress(long userId);
 
-    Map<String, Integer> getWeeklyStress(long userId, String date);
+    Map<String, Integer> getPreviousWeekStress(long userId);
 
     int predictStressLevel(String accessToken);
 

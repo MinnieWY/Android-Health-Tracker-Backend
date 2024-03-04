@@ -1,13 +1,10 @@
 package com.wyminnie.healthtracker.base.stress;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-public class StressDTO {
-    private Long id;
+public class StressInputDTO {
+    private String userId;
     private String date;
     private int stressLevel;
-
 }

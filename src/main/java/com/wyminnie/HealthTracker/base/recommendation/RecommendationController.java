@@ -55,6 +55,12 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendationService.getMaterialsList());
     }
 
+    @GetMapping("/highlight")
+    public ResponseEntity<List<MaterialListItemDTO>> getHightlighList() {
+
+        return ResponseEntity.ok(recommendationService.getMaterialsList());
+    }
+
     @GetMapping(value = "/{materialId}")
     public MaterialDTO getMaterial(@PathVariable("materialId") String materialId) {
         return recommendationService.getMaterialById(Long.valueOf(materialId));

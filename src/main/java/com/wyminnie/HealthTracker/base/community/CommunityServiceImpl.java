@@ -2,16 +2,16 @@ package com.wyminnie.healthtracker.base.community;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.glassfish.jaxb.runtime.v2.schemagen.xmlschema.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.wyminnie.healthtracker.base.user.User;
+import com.wyminnie.healthtracker.base.user.UserListItemDTO;
 
 @Service
 public class CommunityServiceImpl implements CommunityService {
@@ -80,5 +80,50 @@ public class CommunityServiceImpl implements CommunityService {
     private boolean checkAnswer(Question answeredQuestion, int selectedOptions) {
 
         return answeredQuestion.getAnswer() == selectedOptions;
+    }
+
+    @Override
+    public List<QuizRecordListItemDTO> getQuizRecords(Long userId) {
+        return quizRecordRepository.findByUserId(userId).stream().map(QuizRecordListItemDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public QuizRecordDTO getDetailQuizRecord(Long quizRecordId)
+            throws QuizRecordNotFoundException, QuestionNotFoundException {
+        QuizRecord quizRecord = quizRecordRepository.findById(quizRecordId).orElse(null);
+        if (quizRecord == null) {
+            throw new QuizRecordNotFoundException();
+        }
+        Question question = questionRepository.findById(quizRecord.getQuizId()).orElse(null);
+        if (question == null) {
+            throw new QuestionNotFoundException();
+        }
+
+        QuizRecordDTO quizRecordDTO = new QuizRecordDTO();
+        quizRecordDTO.setId(quizRecord.getId());
+        quizRecordDTO.setQuizId(quizRecord.getQuizId());
+        quizRecordDTO.setQuestion(question.getQuestionText());
+        quizRecordDTO.setCorrect(quizRecord.isCorrect());
+
+        Integer correctOptionNo = question.getAnswer();
+        switch (correctOptionNo) {
+            case 1:
+                quizRecordDTO.setAnswer(question.getOption1());
+                break;
+            case 2:
+                quizRecordDTO.setAnswer(question.getOption2());
+                break;
+            case 3:
+                quizRecordDTO.setAnswer(question.getOption3());
+                break;
+            case 4:
+                quizRecordDTO.setAnswer(question.getOption4());
+                break;
+            default:
+                quizRecordDTO.setAnswer("no option");
+                break;
+        }
+        return quizRecordDTO;
     }
 }

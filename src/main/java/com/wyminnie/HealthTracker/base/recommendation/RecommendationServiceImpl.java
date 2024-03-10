@@ -25,10 +25,10 @@ public class RecommendationServiceImpl implements RecommendationService {
     @Override
     public MaterialDTO getMaterialById(Long id) {
         Material selectedMaterial = materialRepository.findById(id).orElse(null);
-        String materialType = selectedMaterial.getType();
         if (selectedMaterial == null) {
             return null;
         }
+
         MaterialDTO materialDTO = new MaterialDTO();
         materialDTO.setId(selectedMaterial.getId());
         materialDTO.setName(selectedMaterial.getName());
@@ -44,12 +44,16 @@ public class RecommendationServiceImpl implements RecommendationService {
                 break;
             case "soundtrack":
                 materialDTO.setDescription(selectedMaterial.getShortDescription());
-                materialDTO.setUrl(selectedMaterial.getUrl());
                 break;
             default:
                 break;
         }
         return materialDTO;
+    }
+
+    @Override
+    public List<MaterialListItemDTO> getHightlighList() {
+        return materialRepository.findAll().stream().map(MaterialListItemDTO::from).collect(Collectors.toList());
     }
 
 }

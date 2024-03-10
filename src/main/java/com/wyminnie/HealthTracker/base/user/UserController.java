@@ -69,16 +69,18 @@ public class UserController {
             user.setRefreashToken(fitbitRefreashToken);
             userService.saveOrUpdate(user);
 
-            String htmlResponse = "<html>"
-                    + "<head>"
-                    + "<title>Fitbit Authorization Complete</title>"
-                    + "</head>"
-                    + "<body>"
-                    + "<h1>Fitbit Authorization Complete</h1>"
-                    + "<p>The authorization process is complete.</p>"
-                    + "<a href=\"ht2024://login\">Click here</a> to redirect back to the application."
-                    + "</body>"
-                    + "</html>";
+            String htmlResponse = """
+                    <html>\
+                    <head>\
+                    <title>Fitbit Authorization Complete</title>\
+                    </head>\
+                    <body>\
+                    <h1>Fitbit Authorization Complete</h1>\
+                    <p>The authorization process is complete.</p>\
+                    <a href="ht2024://login">Click here</a> to redirect back to the application.\
+                    </body>\
+                    </html>\
+                    """;
 
             return ok(htmlResponse);
         } catch (Exception e) {

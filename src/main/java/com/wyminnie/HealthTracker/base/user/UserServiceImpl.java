@@ -1,7 +1,11 @@
 package com.wyminnie.healthtracker.base.user;
 
 import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +39,7 @@ public class UserServiceImpl implements UserService {
         User entity = new User();
         entity.setUsername(userRegistrationDto.getUsername());
         entity.setEmail(userRegistrationDto.getEmail());
-        entity.setUserPW(userRegistrationDto.getPassword());
+        entity.setPassword(userRegistrationDto.getPassword());
 
         final User finalEntity = userRepository.saveAndFlush(entity);
 
@@ -49,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean verifyUserCredentials(User user, String password) {
-        if (user.getUserPW().equals(password)) {
+        if (user.getPassword().equals(password)) {
             return true;
         } else {
             return false;
@@ -86,6 +90,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveOrUpdate(User user) {
         userRepository.save(user);
+    }
+
+    public List<UserListItemDTO> searchUsers(String query) {
+        if (!StringUtils.hasText(query)) {
+            return Collections.emptyList();
+        }
+        List<User> searchResults = userRepository.findByUsernameContaining(query);
+        return searchResults.stream()
+                .map(UserListItemDTO::from)
+                .collect(Collectors.toList());
     }
 
     @Override

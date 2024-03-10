@@ -6,6 +6,6 @@ import lombok.Getter;
 public class QuizAnswerDTO {
     private String userId;
     private String quizId;
-    private int answer;
+    private String answer;
 
 }

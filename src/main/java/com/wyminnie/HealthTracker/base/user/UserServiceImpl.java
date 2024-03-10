@@ -121,7 +121,8 @@ public class UserServiceImpl implements UserService {
         user.setAccessToken(refreashData.getAccess_token());
         user.setRefreashToken(refreashData.getRefresh_token());
         User savedUser = userRepository.saveAndFlush(user);
-        return UserDTO.from(savedUser);
+        UserDTO u = UserDTO.from(savedUser);
+        return u;
     }
 
     private Mono<FitbitRefreash> getFitbitRefreashToken(String refreshToken) {

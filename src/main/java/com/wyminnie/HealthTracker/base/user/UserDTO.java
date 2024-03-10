@@ -1,8 +1,5 @@
 package com.wyminnie.healthtracker.base.user;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import lombok.Data;
 
 @Data

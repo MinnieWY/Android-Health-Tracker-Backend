@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wyminnie.healthtracker.common.ControllerUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 public class LoginController {
@@ -23,7 +22,7 @@ public class LoginController {
     @PostMapping("/login")
     public Object login(@RequestBody UserLoginDto userLoginDto) {
 
-        User loginUser = userService.findByUsername(userLoginDto.getUsername());
+        User loginUser = userService.findByUsername(userLoginDto.getUsername()).orElse(null);
 
         if (loginUser == null) {
             return ControllerUtils.passwordMismatched();

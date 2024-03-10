@@ -23,9 +23,10 @@ public class CommunityServiceImpl implements CommunityService {
     QuizRecordRepository quizRecordRepository;
 
     @Override
-    public boolean addFriendRequest(Optional<User> currentUser, Optional<User> targetUser) throws Exception {
+    public boolean addFriendRequest(Optional<User> currentUser, Optional<User> targetUser)
+            throws FriendshipAlreadyExistException {
         if (!isFriend(currentUser, targetUser)) {
-            throw new Exception();
+            throw new FriendshipAlreadyExistException();
         }
         if (currentUser.isPresent() && targetUser.isPresent()) {
             Friend entity = new Friend();
@@ -126,4 +127,21 @@ public class CommunityServiceImpl implements CommunityService {
         }
         return quizRecordDTO;
     }
+
+    // @Override
+    // public List<LeaderboardDTO> getLeaderboard() {
+    // List<UserListItemDTO> users = user
+
+    // user
+
+    // return users.stream().map(LeaderboardDTO::from).collect(Collectors.toList());
+    // }
+
+    // @Override
+    // public List<LeaderboardDTO> getCommunityLeaderboard(Long userId) {
+    // List<UserListItemDTO> users =
+    // friendRepository.findTop10UsersByUserId(userId);
+    // return users.stream().map(LeaderboardDTO::from).collect(Collectors.toList());
+    // }
+
 }

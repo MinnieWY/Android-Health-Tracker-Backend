@@ -19,4 +19,8 @@ public interface CommunityService {
 
     public QuizRecordDTO getDetailQuizRecord(Long quizRecordId)
             throws QuizRecordNotFoundException, QuestionNotFoundException;
+
+    // public List<LeaderboardDTO> getLeaderboard();
+
+    // public List<LeaderboardDTO> getCommunityLeaderboard(Long userId);
 }

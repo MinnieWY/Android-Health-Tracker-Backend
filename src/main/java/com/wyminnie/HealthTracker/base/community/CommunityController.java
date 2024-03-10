@@ -13,6 +13,7 @@ import com.wyminnie.healthtracker.base.user.UserDTO;
 import com.wyminnie.healthtracker.base.user.UserListItemDTO;
 import com.wyminnie.healthtracker.base.user.UserService;
 
+import static com.wyminnie.healthtracker.common.ControllerUtils.fail;
 import static com.wyminnie.healthtracker.common.ControllerUtils.notFound;
 import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
 
@@ -30,16 +31,16 @@ public class CommunityController {
     private CommunityService communityService;
 
     @GetMapping("/list")
-    public List<UserListItemDTO> searchUsers(@RequestParam String query) {
-        return userService.searchUsers(query);
+    public Object searchUsers(@RequestParam String query) {
+        return ok(userService.searchUsers(query));
     }
 
     @GetMapping("/search")
-    public FriendDTO getUserProfile(@RequestParam String currentUserId, @RequestParam String targetid) {
+    public Object getUserProfile(@RequestParam String currentUserId, @RequestParam String targetid) {
         Optional<User> currentUser = userService.findUserById(Long.parseLong(currentUserId));
         Optional<User> friend = userService.findUserById(Long.parseLong(targetid));
         if (currentUser.isEmpty() || friend.isEmpty()) {
-            throw new RuntimeException("User not found");
+            return notFound();
         }
         FriendDTO friendDTO = new FriendDTO();
         if (communityService.isFriend(currentUser, friend)) {
@@ -47,23 +48,25 @@ public class CommunityController {
         } else {
             friendDTO.setFriend(false);
         }
-        return friendDTO;
+
+        return ok(friendDTO);
     }
 
     @GetMapping("addFriend")
-    public ResponseEntity<String> addFriendRequest(@RequestParam String currentUserId, @RequestParam String friendId)
-            throws Exception {
+    public Object addFriendRequest(@RequestParam String currentUserId, @RequestParam String friendId) {
         Optional<User> currentUser = userService.findUserById(Long.parseLong(currentUserId));
         Optional<User> targetUser = userService.findUserById(Long.parseLong(friendId));
 
         if (currentUser.isEmpty() || targetUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return notFound();
         }
 
-        if (!communityService.addFriendRequest(currentUser, targetUser)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        try {
+            communityService.addFriendRequest(currentUser, targetUser);
+            return ok(null);
+        } catch (Exception e) {
+            return notFound();
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/quiz/question")

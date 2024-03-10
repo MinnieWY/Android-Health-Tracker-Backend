@@ -22,5 +22,5 @@ public class User {
     private float height;
     private float weight;
     private String preference;
-    private String point
+    private int point;
 }

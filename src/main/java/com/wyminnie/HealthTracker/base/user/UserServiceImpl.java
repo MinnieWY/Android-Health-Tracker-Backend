@@ -60,6 +60,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Optional<User> findUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
     public Optional<UserDTO> findUserDTOById(Long id) {
         return userRepository.findById(id).map(u -> {
             UserDTO dto = new UserDTO();
@@ -136,7 +142,7 @@ public class UserServiceImpl implements UserService {
         if (verifyUserCredentials(user, changePasswordRequestDTO.getOldPassword())) {
             throw new PasswordMismatchedException();
         }
-        user.setUserPW(changePasswordRequestDTO.getNewPassword());
+        user.setPassword(changePasswordRequestDTO.getNewPassword());
         userRepository.save(user);
     }
 

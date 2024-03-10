@@ -5,35 +5,32 @@ import java.util.Optional;
 
 public interface UserService {
 
-    Optional<User> findByUsername(String username);
+        Optional<User> findByUsername(String username);
 
-    User findByUserId(Long userId);
+        User findByUserId(Long userId);
 
-    Optional<UserDTO> findUserDTOById(Long userId);
+        Optional<UserDTO> findUserDTOById(Long userId);
 
-    Optional<UserInfoDTO> getUserInfo(Long userId);
+        Optional<UserInfoDTO> getUserInfo(Long userId);
 
-    Optional<UserDTO> createUser(UserRegistrationDto registrationDto)
-            throws DuplicateUsernameException, UserValidException;
+        Optional<UserDTO> createUser(UserRegistrationDto registrationDto)
+                        throws DuplicateUsernameException, UserValidException;
 
-    boolean authorizeAccess();
+        boolean authorizeAccess();
 
-    Optional<UserDTO> editUser(UserInfoDTO userDTO) throws DuplicateUsernameException, UserValidException, Exception;
+        Optional<UserDTO> editUser(UserInfoDTO userDTO)
+                        throws DuplicateUsernameException, UserValidException, Exception;
 
-    boolean verifyUserCredentials(User user, String password);
+        boolean verifyUserCredentials(User user, String password);
 
-    void saveOrUpdate(User user);
+        void saveOrUpdate(User user); // For Fitbit OAuth
 
-    Optional<UserDTO> findUserDTOById(Long userId);
+        Optional<User> findUserById(Long userId);
 
-    Optional<User> findUserById(Long userId);
+        public List<UserListItemDTO> searchUsers(String query);
 
-    public List<UserListItemDTO> searchUsers(String query);
+        public UserDTO updateAccessToken(User user);
 
-    boolean updatePreference(User user, String preference);
-
-    public UserDTO updateAccessToken(User user);
-
-    void changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
-            throws PasswordMismatchedException, UserNotFoundException;
+        void changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
+                        throws PasswordMismatchedException, UserNotFoundException;
 }

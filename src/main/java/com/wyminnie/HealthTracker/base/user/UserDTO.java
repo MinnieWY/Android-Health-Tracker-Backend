@@ -9,7 +9,7 @@ public class UserDTO {
     private String email;
     private String password;
     private String prefernce;
-    private int point
+    private int point;
 
     public static UserDTO from(User entity) {
         UserDTO dto = new UserDTO();

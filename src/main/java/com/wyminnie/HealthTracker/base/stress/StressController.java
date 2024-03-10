@@ -26,7 +26,7 @@ public class StressController {
             @RequestParam("date") String date,
             @RequestParam("stressLevel") int stressLevel) {
 
-        User user = userService.findByUsername(userId);
+        User user = userService.findByUserId(Long.valueOf(userId));
 
         StressDTO savedRecord = stressService.createStressRecord(user.getId(), date, stressLevel);
         return ResponseEntity.ok(savedRecord);
@@ -36,7 +36,7 @@ public class StressController {
     public ResponseEntity<Map<String, Integer>> getWeeklyStress(@RequestParam("userId") String userId,
             @RequestParam("date") String date) {
 
-        User user = userService.findByUsername(userId);
+        User user = userService.findByUserId(Long.valueOf(userId));
 
         Map<String, Integer> stress_record = stressService.getWeeklyStress(user.getId(), date);
 
@@ -45,7 +45,7 @@ public class StressController {
 
     @GetMapping("/prediction")
     public ResponseEntity<Integer> getMethodName(@RequestParam("userId") String userId) {
-        User user = userService.findByUsername(userId);
+        User user = userService.findByUserId(Long.valueOf(userId));
 
         return ResponseEntity.ok(stressService.predictStressLevel(user.getAccessToken()));
     }

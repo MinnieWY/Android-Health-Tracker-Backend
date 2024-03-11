@@ -33,4 +33,8 @@ public interface UserService {
 
         void changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
                         throws PasswordMismatchedException, UserNotFoundException;
+
+        Optional<User> findByEmail(String email);
+
+        UserDTO resetPassword(User user, String newPassword);
 }

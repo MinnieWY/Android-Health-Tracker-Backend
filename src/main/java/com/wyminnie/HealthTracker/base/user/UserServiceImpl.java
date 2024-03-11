@@ -174,4 +174,16 @@ public class UserServiceImpl implements UserService {
         });
 
     }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public UserDTO resetPassword(User user, String newPassword) {
+        user.setPassword(newPassword);
+        User savedUser = userRepository.saveAndFlush(user);
+        return UserDTO.from(savedUser);
+    }
 }

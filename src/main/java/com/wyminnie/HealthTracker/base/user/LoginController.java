@@ -36,4 +36,16 @@ public class LoginController {
         }
     }
 
+    @PostMapping("/forget-password")
+    public Object handleResetPassword(@RequestBody ForgetPasswordDTO forgetPasswordDTO) {
+        User requestUser = userService.findByEmail(forgetPasswordDTO.getEmail()).orElse(null);
+
+        if (requestUser == null) {
+            return ControllerUtils.userNotFound();
+        } else {
+            UserDTO loginUser = userService.resetPassword(requestUser, forgetPasswordDTO.getNewPassword());
+            return ControllerUtils.ok(loginUser);
+        }
+    }
+
 }

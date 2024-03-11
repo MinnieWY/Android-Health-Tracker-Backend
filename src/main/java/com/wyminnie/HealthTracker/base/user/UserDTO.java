@@ -1,8 +1,5 @@
 package com.wyminnie.healthtracker.base.user;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import lombok.Data;
 
 @Data
@@ -11,6 +8,7 @@ public class UserDTO {
     private String username;
     private String email;
     private String password;
+    private String prefernce;
     private int point;
 
     public static UserDTO from(User entity) {
@@ -18,8 +16,12 @@ public class UserDTO {
         dto.id = entity.getId();
         dto.username = entity.getUsername();
         dto.email = entity.getEmail();
+        if (entity.getPreference() != null) {
+            dto.prefernce = entity.getPreference().trim();
+        } else {
+            dto.prefernce = entity.getPreference();
+        }
         dto.point = entity.getPoint();
-
         return dto;
     }
 }

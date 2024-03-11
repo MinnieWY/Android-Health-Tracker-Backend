@@ -5,26 +5,36 @@ import java.util.Optional;
 
 public interface UserService {
 
-    User findByUsername(String username);
+        Optional<User> findByUsername(String username);
 
-    User findByUserId(Long userId);
+        User findByUserId(Long userId);
 
-    Optional<UserDTO> createUser(UserRegistrationDto registrationDto)
-            throws DuplicateUsernameException, UserValidException;
+        Optional<UserDTO> findUserDTOById(Long userId);
 
-    boolean authorizeAccess();
+        Optional<UserInfoDTO> getUserInfo(Long userId);
 
-    boolean verifyUserCredentials(User user, String password);
+        Optional<UserDTO> createUser(UserRegistrationDto registrationDto)
+                        throws DuplicateUsernameException, UserValidException;
 
-    void saveOrUpdate(User user);
+        boolean authorizeAccess();
 
-    Optional<UserDTO> findUserDTOById(Long userId);
+        Optional<UserDTO> editUser(UserInfoDTO userDTO)
+                        throws DuplicateUsernameException, UserValidException, Exception;
 
-    Optional<User> findUserById(Long userId);
+        boolean verifyUserCredentials(User user, String password);
 
-    public List<UserListItemDTO> searchUsers(String query);
+        void saveOrUpdate(User user); // For Fitbit OAuth
 
-    boolean updatePreference(User user, String preference);
+        Optional<User> findUserById(Long userId);
 
-    public UserDTO updateAccessToken(User user);
+        public List<UserListItemDTO> searchUsers(String query);
+
+        public UserDTO updateAccessToken(User user);
+
+        void changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
+                        throws PasswordMismatchedException, UserNotFoundException;
+
+        Optional<User> findByEmail(String email);
+
+        UserDTO resetPassword(User user, String newPassword);
 }

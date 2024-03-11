@@ -42,8 +42,8 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public boolean isFriend(Optional<User> currentUser, Optional<User> targetUser) {
-        return false;
         // return friendRepository.existsByUsers(currentUser, targetUser);
+        return false;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class CommunityServiceImpl implements CommunityService {
         return quizRecordDTO;
     }
 
-    private boolean checkAnswer(Question answeredQuestion, int selectedOptions) {
+    private boolean checkAnswer(Question answeredQuestion, String selectedOptions) {
 
         return answeredQuestion.getAnswer() == selectedOptions;
     }
@@ -116,18 +116,18 @@ public class CommunityServiceImpl implements CommunityService {
         quizRecordDTO.setQuestion(question.getQuestionText());
         quizRecordDTO.setCorrect(quizRecord.isCorrect());
 
-        Integer correctOptionNo = question.getAnswer();
-        switch (correctOptionNo) {
-            case 1:
+        String correctOption = question.getAnswer();
+        switch (correctOption) {
+            case "A":
                 quizRecordDTO.setAnswer(question.getOption1());
                 break;
-            case 2:
+            case "B":
                 quizRecordDTO.setAnswer(question.getOption2());
                 break;
-            case 3:
+            case "C":
                 quizRecordDTO.setAnswer(question.getOption3());
                 break;
-            case 4:
+            case "D":
                 quizRecordDTO.setAnswer(question.getOption4());
                 break;
             default:

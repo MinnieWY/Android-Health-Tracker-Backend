@@ -18,6 +18,9 @@ public class User {
     private String password;
     private String accessToken;
     private String refreashToken;
+    private String gender;
+    private float height;
+    private float weight;
     private String preference;
     private int point;
 }

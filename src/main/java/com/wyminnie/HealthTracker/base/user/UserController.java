@@ -1,33 +1,26 @@
 package com.wyminnie.healthtracker.base.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.scribejava.apis.FitbitApi20;
-import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.wyminnie.healthtracker.base.fitbit.FitbitOAuthService;
-import com.wyminnie.healthtracker.common.ControllerUtils;
 
 import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
+import static com.wyminnie.healthtracker.common.ControllerUtils.passwordMismatched;
+import static com.wyminnie.healthtracker.common.ControllerUtils.permissionDenied;
 import static com.wyminnie.healthtracker.common.ControllerUtils.duplicatedUsername;
 import static com.wyminnie.healthtracker.common.ControllerUtils.notFound;
 import static com.wyminnie.healthtracker.common.ControllerUtils.serverError;
+import static com.wyminnie.healthtracker.common.ControllerUtils.userNotFound;
 import static com.wyminnie.healthtracker.common.ControllerUtils.userValid;
-
-import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 public class UserController {
@@ -38,35 +31,27 @@ public class UserController {
     private FitbitOAuthService fitbitOAuthService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registration(@RequestBody UserDTO dto) {
-        // try {
-        // return userService.createUser(dto).map(ControllerUtils::ok);
-        // } catch (DuplicateUsernameException e) {
-        // return duplicatedUsername();
-        // } catch (UserValidException e) {
-        // return userValid();
-        // } catch (Exception e) {
-        // return serverError();
-        // }
-        // Optional<UserDTO> user = userService.createUser(dto);
-        // return ResponseEntity.status(HttpStatus.CREATED).build();
+    public Object registration(@RequestBody UserRegistrationDto dto) {
+        try {
 
-        // Create a new user(makeup for now)
-        User user = userService.findByUsername("admin");
+            UserDTO userDTO = userService.createUser(dto).orElse(null);
+            // Initiate the Fitbit OAuth flow
+            String authorizationUrl = fitbitOAuthService.getAuthorizationUrl(userDTO.getId());
 
-        // Initiate the Fitbit OAuth flow
-        String authorizationUrl = fitbitOAuthService.getAuthorizationUrl(user.getId());
+            return ok(userDTO, authorizationUrl);
+        } catch (DuplicateUsernameException e) {
+            return duplicatedUsername();
+        } catch (UserValidException e) {
+            return userValid();
+        } catch (Exception e) {
+            return serverError();
+        }
 
-        // Construct the response string with the authorization URL and user ID
-        String response = authorizationUrl + "," + user.getId();
-
-        // Return the response string to the frontend
-        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/callback")
-    public String handleCallback(@RequestParam("code") String authorizationCode,
-            @RequestParam String state, Model model) {
+    public Object handleCallback(@RequestParam("code") String authorizationCode,
+            @RequestParam("state") String state, Model model) {
 
         OAuth20Service service = fitbitOAuthService.getOAuthService();
 
@@ -77,7 +62,7 @@ public class UserController {
             String fitbitRefreashToken = accessToken.getRefreshToken();
 
             // Get the currently logged in user
-            User user = userService.findByUsername("admin");
+            User user = userService.findByUserId(Long.valueOf(state));
 
             // Update the user's access token
             user.setAccessToken(fitbitAccessToken);
@@ -97,16 +82,51 @@ public class UserController {
                     </html>\
                     """;
 
-            return htmlResponse;
-
-        } catch (IOException | InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            return ok(htmlResponse);
+        } catch (Exception e) {
+            return serverError();
         }
-        return "failure";
     }
 
     @GetMapping("/{userId}")
-    public Optional<User> getUserById(@PathVariable String userId) {
-        return userService.findUserById(Long.valueOf(userId));
+    public Object getUserGerneralInfo(@PathVariable("userId") String userId) {
+        return userService.findUserDTOById(Long.valueOf(userId)).map(u -> {
+            return ok(u);
+        }).orElse(notFound());
     }
+
+    @GetMapping("/userInfo/{userId}")
+    public Object getUserInfo(@PathVariable("userId") String userId) {
+        return userService.getUserInfo(Long.valueOf(userId)).map(u -> {
+            return ok(u);
+        }).orElse(notFound());
+    }
+
+    @PostMapping("/changePassword")
+    public Object changePassword(@RequestBody ChangePasswordRequestDTO dto) {
+        try {
+            userService.changePassword(dto);
+            return ok(true);
+        } catch (PasswordMismatchedException e) {
+            return passwordMismatched();
+        } catch (UserNotFoundException e) {
+            return userNotFound();
+        }
+    }
+
+    @PostMapping("/editUser")
+    public Object editUser(@RequestBody UserInfoDTO userDTO) {
+        try {
+            return userService.editUser(userDTO).map(u -> {
+                return ok(u);
+            });
+        } catch (DuplicateUsernameException e) {
+            return duplicatedUsername();
+        } catch (UserValidException e) {
+            return userValid();
+        } catch (Exception e) {
+            return serverError();
+        }
+    }
+
 }

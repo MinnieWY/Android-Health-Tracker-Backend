@@ -25,6 +25,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public boolean addFriendRequest(Optional<User> currentUser, Optional<User> targetUser)
             throws FriendshipAlreadyExistException {
+
         if (!isFriend(currentUser, targetUser)) {
             throw new FriendshipAlreadyExistException();
         }
@@ -41,7 +42,8 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public boolean isFriend(Optional<User> currentUser, Optional<User> targetUser) {
-        return friendRepository.existsByUsers(currentUser, targetUser);
+        return false;
+        // return friendRepository.existsByUsers(currentUser, targetUser);
     }
 
     @Override
@@ -61,7 +63,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public QuizRecord submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user) {
+    public QuizRecordDTO submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user) {
         Question answeredQuestion = questionRepository.findById(Long.valueOf(quizAnswerDTO.getQuizId())).orElse(null);
 
         if (answeredQuestion == null) {
@@ -75,7 +77,14 @@ public class CommunityServiceImpl implements CommunityService {
         quizRecord.setQuizId(answeredQuestion.getId());
         quizRecord.setDateAnswered(Date.valueOf(LocalDate.now()));
 
-        return quizRecordRepository.saveAndFlush(quizRecord);
+        QuizRecord savedRecord = quizRecordRepository.saveAndFlush(quizRecord);
+        QuizRecordDTO quizRecordDTO = new QuizRecordDTO();
+        quizRecordDTO.setId(savedRecord.getId());
+        quizRecordDTO.setQuizId(savedRecord.getQuizId());
+        quizRecordDTO.setQuestion(answeredQuestion.getQuestionText());
+        quizRecordDTO.setCorrect(savedRecord.isCorrect());
+
+        return quizRecordDTO;
     }
 
     private boolean checkAnswer(Question answeredQuestion, int selectedOptions) {
@@ -128,20 +137,10 @@ public class CommunityServiceImpl implements CommunityService {
         return quizRecordDTO;
     }
 
-    // @Override
-    // public List<LeaderboardDTO> getLeaderboard() {
-    // List<UserListItemDTO> users = user
+    @Override
+    public List<LeaderboardDTO> getLeaderboard(User user) {
 
-    // user
-
-    // return users.stream().map(LeaderboardDTO::from).collect(Collectors.toList());
-    // }
-
-    // @Override
-    // public List<LeaderboardDTO> getCommunityLeaderboard(Long userId) {
-    // List<UserListItemDTO> users =
-    // friendRepository.findTop10UsersByUserId(userId);
-    // return users.stream().map(LeaderboardDTO::from).collect(Collectors.toList());
-    // }
+        return friendRepository.findTop3FriendsWithScores(user.getId());
+    }
 
 }

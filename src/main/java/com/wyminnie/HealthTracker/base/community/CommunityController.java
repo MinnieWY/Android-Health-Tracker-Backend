@@ -70,24 +70,24 @@ public class CommunityController {
     }
 
     @GetMapping("/quiz/question")
-    public ResponseEntity<QuestionDTO> getTodayQuestion() {
+    public Object getTodayQuestion() {
         QuestionDTO question = communityService.getTodayQuestion();
 
         // Return the question in the response
         if (question != null) {
-            return ResponseEntity.ok(question);
+            return ok(question);
         } else {
-            return ResponseEntity.notFound().build();
+            return notFound();
         }
     }
 
     @PostMapping("/quiz/answer")
-    public ResponseEntity<QuizRecord> submitQuizAnswer(@RequestBody QuizAnswerDTO answer) {
+    public Object submitQuizAnswer(@RequestBody QuizAnswerDTO answer) {
         User user = userService.findUserById(Long.parseLong(answer.getUserId())).orElse(null);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return notFound();
         }
-        return ResponseEntity.ok(communityService.submitQuizAnswer(answer, user));
+        return ok(communityService.submitQuizAnswer(answer, user));
     }
 
     @GetMapping("/quiz/record/user/{userId}")
@@ -107,6 +107,16 @@ public class CommunityController {
         } catch (QuizRecordNotFoundException | QuestionNotFoundException e) {
             return notFound();
         }
+    }
+
+    @PostMapping("/leaderboard")
+    public Object getLeaderboard(@RequestBody String userId) {
+        User user = userService.findUserById(Long.parseLong(userId)).orElse(null);
+        if (user == null) {
+            return notFound();
+        }
+
+        return ok(communityService.getLeaderboard(user));
     }
 
 }

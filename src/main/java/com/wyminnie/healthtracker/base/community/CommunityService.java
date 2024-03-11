@@ -13,14 +13,12 @@ public interface CommunityService {
 
     public QuestionDTO getTodayQuestion();
 
-    public QuizRecord submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user);
+    public QuizRecordDTO submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user);
 
     public List<QuizRecordListItemDTO> getQuizRecords(Long userId);
 
     public QuizRecordDTO getDetailQuizRecord(Long quizRecordId)
             throws QuizRecordNotFoundException, QuestionNotFoundException;
 
-    // public List<LeaderboardDTO> getLeaderboard();
-
-    // public List<LeaderboardDTO> getCommunityLeaderboard(Long userId);
+    public List<LeaderboardDTO> getLeaderboard(User user);
 }

@@ -1,7 +1,5 @@
 package com.wyminnie.healthtracker.base.community;
 
-import com.wyminnie.healthtracker.base.user.User;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;

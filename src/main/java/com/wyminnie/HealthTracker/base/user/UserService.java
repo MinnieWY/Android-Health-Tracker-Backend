@@ -3,6 +3,8 @@ package com.wyminnie.healthtracker.base.user;
 import java.util.List;
 import java.util.Optional;
 
+import com.wyminnie.healthtracker.base.community.LeaderboardDTO;
+
 public interface UserService {
 
         Optional<User> findByUsername(String username);
@@ -37,4 +39,8 @@ public interface UserService {
         Optional<User> findByEmail(String email);
 
         UserDTO resetPassword(User user, String newPassword);
+
+        List<LeaderboardDTO> getLeaderboard();
+
+        Optional<UserInfoDTO> getUserPublicProfile(Long userId);
 }

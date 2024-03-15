@@ -16,35 +16,9 @@ import com.wyminnie.healthtracker.base.user.UserListItemDTO;
 @Service
 public class CommunityServiceImpl implements CommunityService {
     @Autowired
-    FriendRepository friendRepository;
-    @Autowired
     QuestionRepository questionRepository;
     @Autowired
     QuizRecordRepository quizRecordRepository;
-
-    @Override
-    public boolean addFriendRequest(Optional<User> currentUser, Optional<User> targetUser)
-            throws FriendshipAlreadyExistException {
-
-        if (!isFriend(currentUser, targetUser)) {
-            throw new FriendshipAlreadyExistException();
-        }
-        if (currentUser.isPresent() && targetUser.isPresent()) {
-            Friend entity = new Friend();
-            entity.setUser1(currentUser.get().getId());
-            entity.setUser2(targetUser.get().getId());
-            entity.setStatus("PENDING");
-            friendRepository.save(entity);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isFriend(Optional<User> currentUser, Optional<User> targetUser) {
-        // return friendRepository.existsByUsers(currentUser, targetUser);
-        return false;
-    }
 
     @Override
     public QuestionDTO getTodayQuestion() {
@@ -63,11 +37,11 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public QuizRecordDTO submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user) {
+    public QuizRecordDTO submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user) throws QuestionNotFoundException {
         Question answeredQuestion = questionRepository.findById(Long.valueOf(quizAnswerDTO.getQuizId())).orElse(null);
 
         if (answeredQuestion == null) {
-            throw new RuntimeException("Question not found");
+            throw new QuestionNotFoundException();
         }
 
         boolean isCorrect = checkAnswer(answeredQuestion, quizAnswerDTO.getAnswer());
@@ -136,11 +110,4 @@ public class CommunityServiceImpl implements CommunityService {
         }
         return quizRecordDTO;
     }
-
-    @Override
-    public List<LeaderboardDTO> getLeaderboard(User user) {
-
-        return friendRepository.findTop3FriendsWithScores(user.getId());
-    }
-
 }

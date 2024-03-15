@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import com.wyminnie.healthtracker.base.community.LeaderboardDTO;
 import com.wyminnie.healthtracker.common.ServerErrorException;
 
 import reactor.core.publisher.Mono;
@@ -185,5 +187,20 @@ public class UserServiceImpl implements UserService {
         user.setPassword(newPassword);
         User savedUser = userRepository.saveAndFlush(user);
         return UserDTO.from(savedUser);
+    }
+
+    @Override
+    public List<LeaderboardDTO> getLeaderboard() {
+        return userRepository.findtop3UsersByOrderByPointsDesc().stream()
+                .map(LeaderboardDTO::from).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<UserInfoDTO> getUserPublicProfile(Long userId) {
+        return userRepository.findById(userId).map(u -> {
+            UserInfoDTO dto = new UserInfoDTO();
+            dto = UserInfoDTO.from(u);
+            return dto;
+        });
     }
 }

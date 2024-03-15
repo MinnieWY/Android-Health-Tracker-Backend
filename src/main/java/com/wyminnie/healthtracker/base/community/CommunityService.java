@@ -7,18 +7,12 @@ import com.wyminnie.healthtracker.base.user.User;
 
 public interface CommunityService {
 
-    public boolean addFriendRequest(Optional<User> currentUser, Optional<User> targetUser) throws Exception;
-
-    public boolean isFriend(Optional<User> currentUser, Optional<User> targetUser);
-
     public QuestionDTO getTodayQuestion();
 
-    public QuizRecordDTO submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user);
+    public QuizRecordDTO submitQuizAnswer(QuizAnswerDTO quizAnswerDTO, User user) throws QuestionNotFoundException;
 
     public List<QuizRecordListItemDTO> getQuizRecords(Long userId);
 
     public QuizRecordDTO getDetailQuizRecord(Long quizRecordId)
             throws QuizRecordNotFoundException, QuestionNotFoundException;
-
-    public List<LeaderboardDTO> getLeaderboard(User user);
 }

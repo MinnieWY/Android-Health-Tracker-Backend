@@ -24,20 +24,6 @@ public class RecommendationController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/update-preference")
-    public ResponseEntity<String> saveUserPreference(@RequestBody UpdatePreferenceDTO updatePreferenceDTO) {
-
-        User user = userService.findByUserId(Long.valueOf(updatePreferenceDTO.getUserId()));
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
-        }
-        if (userService.updatePreference(user, updatePreferenceDTO.getPreference())) {
-            return ResponseEntity.ok("User preference updated successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User preference update failed");
-        }
-    }
-
     @PostMapping("/recommended-materials")
     public ResponseEntity<List<MaterialListItemDTO>> getRecommendedMaterials(
             @RequestBody UserIDDTO recommendMaterialDTO) {
@@ -51,6 +37,12 @@ public class RecommendationController {
 
     @GetMapping("/list")
     public ResponseEntity<List<MaterialListItemDTO>> getMaterialsList() {
+
+        return ResponseEntity.ok(recommendationService.getMaterialsList());
+    }
+
+    @GetMapping("/highlight")
+    public ResponseEntity<List<MaterialListItemDTO>> getHightlighList() {
 
         return ResponseEntity.ok(recommendationService.getMaterialsList());
     }

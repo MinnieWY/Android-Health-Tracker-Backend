@@ -1,25 +1,40 @@
 package com.wyminnie.healthtracker.base.user;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
 
-    User findByUsername(String username);
+        Optional<User> findByUsername(String username);
 
-    User findByUserId(Long userId);
+        User findByUserId(Long userId);
 
-    Optional<UserDTO> createUser(UserRegistrationDto registrationDto)
-            throws DuplicateUsernameException, UserValidException;
+        Optional<UserDTO> findUserDTOById(Long userId);
 
-    boolean authorizeAccess();
+        Optional<UserInfoDTO> getUserInfo(Long userId);
 
-    boolean verifyUserCredentials(User user, String password);
+        Optional<UserDTO> createUser(UserRegistrationDto registrationDto)
+                        throws DuplicateUsernameException, UserValidException;
 
-    void saveOrUpdate(User user);
+        boolean authorizeAccess();
 
-    Optional<UserDTO> findUserById(Long userId);
+        Optional<UserDTO> editUser(UserInfoDTO userDTO)
+                        throws DuplicateUsernameException, UserValidException, Exception;
 
-    boolean updatePreference(User user, String preference);
+        boolean verifyUserCredentials(User user, String password);
 
-    public UserDTO updateAccessToken(User user);
+        void saveOrUpdate(User user); // For Fitbit OAuth
+
+        Optional<User> findUserById(Long userId);
+
+        public List<UserListItemDTO> searchUsers(String query);
+
+        public UserDTO updateAccessToken(User user);
+
+        void changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
+                        throws PasswordMismatchedException, UserNotFoundException;
+
+        Optional<User> findByEmail(String email);
+
+        UserDTO resetPassword(User user, String newPassword);
 }

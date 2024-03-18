@@ -7,5 +7,7 @@ public interface RecommendationService {
 
     List<MaterialListItemDTO> getMaterialsList();
 
+    List<MaterialListItemDTO> getHightlighList();
+
     MaterialDTO getMaterialById(Long id);
 }

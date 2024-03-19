@@ -190,8 +190,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<LeaderboardDTO> getLeaderboard() {
-        return userRepository.findtop3UsersByOrderByPointsDesc().stream()
+    public Integer getRanking(Long userId) {
+        return userRepository.getRanking(userId);
+    }
+
+    @Override
+    public List<LeaderboardDTO> getTop3Leaderboard() {
+        return userRepository.findTop3ByOrderByPointDesc().stream()
                 .map(LeaderboardDTO::from).collect(Collectors.toList());
     }
 

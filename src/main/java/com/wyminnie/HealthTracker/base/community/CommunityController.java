@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wyminnie.healthtracker.base.user.User;
 import com.wyminnie.healthtracker.base.user.UserDTO;
 import com.wyminnie.healthtracker.base.user.UserService;
+import com.wyminnie.healthtracker.common.UserIDDTO;
 
+import static com.wyminnie.healthtracker.common.ControllerUtils.fail;
 import static com.wyminnie.healthtracker.common.ControllerUtils.notFound;
 import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
 import static com.wyminnie.healthtracker.common.ControllerUtils.userNotFound;
@@ -84,9 +86,22 @@ public class CommunityController {
         }
     }
 
-    @GetMapping("/leaderboard")
-    public Object getLeaderboard() {
-        return ok(userService.getLeaderboard());
+    @GetMapping("/top3")
+    public Object getTop3Ranking() {
+        return ok(userService.getTop3Leaderboard());
+    }
+
+    @PostMapping("/rank")
+    public Object getRanking(@RequestBody UserIDDTO userIDDTO) {
+        User user = userService.findUserById(Long.parseLong(userIDDTO.getUserId())).orElse(null);
+        if (user == null) {
+            return notFound();
+        }
+        try {
+            return ok(userService.getRanking(user.getId()));
+        } catch (Exception e) {
+            return fail(null, e.getMessage());
+        }
     }
 
 }

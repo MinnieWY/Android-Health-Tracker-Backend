@@ -40,7 +40,9 @@ public interface UserService {
 
         UserDTO resetPassword(User user, String newPassword);
 
-        List<LeaderboardDTO> getLeaderboard();
+        Integer getRanking(Long userId);
+
+        List<LeaderboardDTO> getTop3Leaderboard();
 
         Optional<UserInfoDTO> getUserPublicProfile(Long userId);
 }

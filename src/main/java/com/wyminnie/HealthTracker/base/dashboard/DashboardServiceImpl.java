@@ -6,20 +6,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wyminnie.healthtracker.base.fitbit.FitbitFetchService;
 import com.wyminnie.healthtracker.base.fitbit.FitbitHRVInterval;
-import com.wyminnie.healthtracker.base.fitbit.FitbitOAuthService;
-import com.wyminnie.healthtracker.base.fitbit.FitbitHRVInterval.HRVData;
 import com.wyminnie.healthtracker.base.user.User;
 
 import reactor.core.publisher.Mono;
@@ -63,7 +58,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Map<String, Integer> getPreviousWeekStepsCount(User user)
-            throws JsonMappingException, JsonProcessingException {
+            throws JsonProcessingException {
         String startDate = getPreviousWeekDate();
         String endDate = getPreviousDate();
 
@@ -93,4 +88,29 @@ public class DashboardServiceImpl implements DashboardService {
         return stepsCountMap;
     }
 
+    @Override
+    public BMIDTO getBMI(User user) throws ProfileNotCompleteException, BMIInvalidException {
+        if (user.getWeight() == 0 || user.getHeight() == 0) {
+            return null;
+        }
+        BMIDTO bmiDTO = new BMIDTO();
+        double bmi = user.getWeight() / (user.getHeight() * user.getHeight());
+        if (bmi < 10 || bmi > 50) {
+            throw new BMIInvalidException();
+        } else {
+            bmiDTO.setBmi(bmi);
+        }
+
+        if (bmi < 18.5) {
+            bmiDTO.setBmiCategory("Underweight");
+        } else if (bmi >= 18.5 && bmi < 24.9) {
+            bmiDTO.setBmiCategory("Normal");
+        } else if (bmi >= 25 && bmi < 29.9) {
+            bmiDTO.setBmiCategory("Overweight");
+        } else {
+            bmiDTO.setBmiCategory("Obese");
+        }
+
+        return bmiDTO;
+    }
 }

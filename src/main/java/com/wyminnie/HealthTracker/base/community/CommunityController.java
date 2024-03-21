@@ -27,8 +27,8 @@ public class CommunityController {
     @Autowired
     private CommunityService communityService;
 
-    @GetMapping("/list")
-    public Object searchUsers(@RequestParam String query) {
+    @GetMapping(value = "/query={query}")
+    public Object searchUsers(@PathVariable("query") String query) {
         return ok(userService.searchUsers(query));
     }
 

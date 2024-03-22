@@ -5,8 +5,10 @@ import java.util.Map;
 public interface StressService {
     StressDTO createStressRecord(long userId, String date, int level);
 
-    Map<String, Integer> getWeeklyStress(long userId, String date);
+    int getTodayStress(long userId);
 
-    int predictStressLevel(String accessToken);
+    Map<String, Integer> getPreviousWeekStress(long userId);
+
+    int predictStressLevel(String accessToken) throws MLFailedException;
 
 }

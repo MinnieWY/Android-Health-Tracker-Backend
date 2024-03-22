@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StressRepository extends JpaRepository<Stress, Long> {
-    StressDTO findByUserIdAndDate(Long userId, String date);
+    Stress findByUserIdAndDate(Long userId, String date);
 }

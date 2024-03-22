@@ -1,22 +1,17 @@
 package com.wyminnie.healthtracker.base.stress;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wyminnie.healthtracker.base.user.User;
 import com.wyminnie.healthtracker.base.user.UserService;
 import com.wyminnie.healthtracker.common.UserIDDTO;
 
-import org.springframework.web.bind.annotation.GetMapping;
-
 import static com.wyminnie.healthtracker.common.ControllerUtils.fail;
+import static com.wyminnie.healthtracker.common.ControllerUtils.notFound;
 import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
 
 @RestController
@@ -28,40 +23,47 @@ public class StressController {
     UserService userService;
 
     @PostMapping("/input")
-    public ResponseEntity<StressDTO> inputStressData(@RequestBody StressInputDTO stressInputDTO) {
+    public Object inputStressData(@RequestBody StressInputDTO stressInputDTO) {
         User user = userService.findByUserId(Long.valueOf(stressInputDTO.getUserId()));
         if (user == null) {
-            return ResponseEntity.badRequest().build();
+            return notFound();
         }
-
-        StressDTO savedRecord = stressService.createStressRecord(user.getId(), stressInputDTO.getDate(),
-                stressInputDTO.getStressLevel());
-        return ResponseEntity.ok(savedRecord);
+        try {
+            return ok(stressService.createStressRecord(user.getId(), stressInputDTO.getDate(),
+                    stressInputDTO.getStressLevel()));
+        } catch (Exception e) {
+            return fail("ERROR_STRESS_RECORD_FAILED");
+        }
     }
 
     @PostMapping("/today")
-    public ResponseEntity<Integer> getTodayStress(@RequestBody UserIDDTO userIDDTO) {
+    public Object getTodayStress(@RequestBody UserIDDTO userIDDTO) {
         User user = userService.findByUserId(Long.valueOf(userIDDTO.getUserId()));
         if (user == null) {
-            return ResponseEntity.badRequest().build();
+            return notFound();
         }
-
-        return ResponseEntity.ok(stressService.getTodayStress(user.getId()));
+        try {
+            return ok(stressService.getTodayStress(user.getId()));
+        } catch (Exception e) {
+            return fail("ERROR_GET_TODAY_STRESS_FAILED");
+        }
     }
 
     @PostMapping("/weekly")
-    public ResponseEntity<Map<String, Integer>> getPreviousWeekStress(
-            @RequestBody UserIDDTO userIDDTO) {
+    public Object getPreviousWeekStress(@RequestBody UserIDDTO userIDDTO) {
         User user = userService.findByUserId(Long.valueOf(userIDDTO.getUserId()));
         if (user == null) {
-            return ResponseEntity.badRequest().build();
+            return notFound();
         }
-
-        return ResponseEntity.ok(stressService.getPreviousWeekStress(user.getId()));
+        try {
+            return ok(stressService.getPreviousWeekStress(user.getId()));
+        } catch (Exception e) {
+            return fail("ERROR_GET_WEEKLY_STRESS_FAILED");
+        }
     }
 
     @PostMapping("/prediction")
-    public Object getMethodName(@RequestBody UserIDDTO userIddto) {
+    public Object predictStressLevel(@RequestBody UserIDDTO userIddto) {
         User user = userService.findByUserId(Long.valueOf(userIddto.getUserId()));
 
         try {

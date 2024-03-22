@@ -73,7 +73,7 @@ public class StressServiceImpl implements StressService {
     }
 
     @Override
-    public int predictStressLevel(String accessToken) {
+    public int predictStressLevel(String accessToken) throws MLFailedException {
         BodyInserters.FormInserter<String> requestBody = BodyInserters
                 .fromFormData("accessToken", accessToken);
 
@@ -81,12 +81,18 @@ public class StressServiceImpl implements StressService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        return webClient.post()
-                .uri("/predict")
+        String stressLevel = webClient.post()
+                .uri("http://127.0.0.1:5000/predict")
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .body(requestBody)
                 .retrieve()
-                .bodyToMono(Integer.class)
+                .bodyToMono(String.class)
                 .block();
+
+        if (stressLevel != null) {
+            return Integer.valueOf(stressLevel);
+        } else {
+            throw new MLFailedException();
+        }
     }
 }

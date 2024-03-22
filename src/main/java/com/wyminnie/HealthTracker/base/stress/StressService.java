@@ -9,6 +9,6 @@ public interface StressService {
 
     Map<String, Integer> getPreviousWeekStress(long userId);
 
-    int predictStressLevel(String accessToken);
+    int predictStressLevel(String accessToken) throws MLFailedException;
 
 }

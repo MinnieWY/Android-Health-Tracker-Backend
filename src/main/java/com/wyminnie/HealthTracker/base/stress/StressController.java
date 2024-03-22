@@ -16,6 +16,9 @@ import com.wyminnie.healthtracker.common.UserIDDTO;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
+import static com.wyminnie.healthtracker.common.ControllerUtils.fail;
+import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
+
 @RestController
 @RequestMapping("/stress")
 public class StressController {
@@ -57,11 +60,15 @@ public class StressController {
         return ResponseEntity.ok(stressService.getPreviousWeekStress(user.getId()));
     }
 
-    @GetMapping("/prediction")
-    public ResponseEntity<Integer> getMethodName(@RequestParam("userId") String userId) {
-        User user = userService.findByUserId(Long.valueOf(userId));
+    @PostMapping("/prediction")
+    public Object getMethodName(@RequestBody UserIDDTO userIddto) {
+        User user = userService.findByUserId(Long.valueOf(userIddto.getUserId()));
 
-        return ResponseEntity.ok(stressService.predictStressLevel(user.getAccessToken()));
+        try {
+            return ok(stressService.predictStressLevel(user.getAccessToken()));
+        } catch (MLFailedException e) {
+            return fail("ERROR_ML_FAILED");
+        }
     }
 
 }

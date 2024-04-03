@@ -49,6 +49,19 @@ public class StressController {
         }
     }
 
+    @PostMapping("/date")
+    public Object getStressByDate(@RequestBody StressDateDTO stressDateDTO) {
+        User user = userService.findByUserId(Long.valueOf(stressDateDTO.getUserId()));
+        if (user == null) {
+            return notFound();
+        }
+        try {
+            return ok(stressService.getTodayStress(user.getId()));
+        } catch (Exception e) {
+            return fail("ERROR_GET_DATE_STRESS_FAILED");
+        }
+    }
+
     @PostMapping("/weekly")
     public Object getPreviousWeekStress(@RequestBody UserIDDTO userIDDTO) {
         User user = userService.findByUserId(Long.valueOf(userIDDTO.getUserId()));
@@ -62,6 +75,20 @@ public class StressController {
         }
     }
 
+    @PostMapping("/monthly")
+    public Object getMonthStress(@RequestBody StressMonthDTO stressMonthDTO) {
+        User user = userService.findByUserId(Long.valueOf(stressMonthDTO.getUserId()));
+        if (user == null) {
+            return notFound();
+        }
+        try {
+            return ok(stressService.getMonthStress(user.getId(), stressMonthDTO.getMonth(),
+                    stressMonthDTO.getYear()));
+        } catch (Exception e) {
+            return fail("ERROR_GET_WEEKLY_STRESS_FAILED");
+        }
+    }
+
     @PostMapping("/prediction")
     public Object predictStressLevel(@RequestBody UserIDDTO userIddto) {
         User user = userService.findByUserId(Long.valueOf(userIddto.getUserId()));
@@ -69,7 +96,7 @@ public class StressController {
         try {
             return ok(stressService.predictStressLevel(user.getAccessToken()));
         } catch (MLFailedException e) {
-            return fail("ERROR_ML_FAILED");
+            return fail(e.getMessage());
         }
     }
 

@@ -1,5 +1,6 @@
 package com.wyminnie.healthtracker.base.dashboard;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,21 @@ public class DashboardController {
             return fail("PROFILE_NOT_COMPLETE");
         } catch (BMIInvalidException e) {
             return fail("BMI_INVALID");
+        }
+    }
+
+    @PostMapping("/sharing")
+    public Object sharing(@RequestBody CompleteRecordDTO completeRecordDTO) {
+        User user = userService.findByUserId(Long.valueOf(completeRecordDTO.getUserId()));
+        if (user == null) {
+            return notFound();
+        }
+        try {
+
+            return ok(dashboardService.getSharing(user.getUsername(), completeRecordDTO.getSteps(),
+                    completeRecordDTO.getDays(), completeRecordDTO.getStartDate()));
+        } catch (Error | IOException e) {
+            return fail("SERVER_ERROR");
         }
     }
 }

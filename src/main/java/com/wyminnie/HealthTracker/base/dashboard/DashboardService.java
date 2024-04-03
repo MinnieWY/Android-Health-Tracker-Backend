@@ -1,5 +1,7 @@
 package com.wyminnie.healthtracker.base.dashboard;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,5 +15,7 @@ public interface DashboardService {
             throws JsonProcessingException;
 
     public BMIDTO getBMI(User user) throws ProfileNotCompleteException, BMIInvalidException;
+
+    public byte[] getSharing(String username, Integer steps, Integer days, String date) throws IOException;
 
 }

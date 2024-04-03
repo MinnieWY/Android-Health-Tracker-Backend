@@ -17,4 +17,6 @@ public class Stress {
     private Long userId;
     private String date;
     private int stressLevel;
+    private int month;
+    private int year;
 }

@@ -1,11 +1,11 @@
 package com.wyminnie.healthtracker.base.community;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    Question findOneByDate(Date date);
+    Question findOneByDate(LocalDate date);
 }

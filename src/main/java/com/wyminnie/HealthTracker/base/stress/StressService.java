@@ -1,19 +1,16 @@
 package com.wyminnie.healthtracker.base.stress;
 
 import java.util.List;
-import java.util.Map;
 
 public interface StressService {
-    StressDTO createStressRecord(long userId, String date, int level);
+    StressDTO createStressRecord(long userId, String date, int level) throws StressRecordAlreadyExist;
 
     int getTodayStress(long userId);
 
-    int getDateStress(long userId, String date);
-
-    Map<String, Integer> getPreviousWeekStress(long userId);
+    StressTrendDTO getStresTrend(long userId) throws NoStressRecordException;
 
     List<StressDTO> getMonthStress(long userId, String month, String year);
 
-    int predictStressLevel(String accessToken) throws MLFailedException;
+    StressDTO predictStressLevel(Long userId, String accessToken) throws MLFailedException;
 
 }

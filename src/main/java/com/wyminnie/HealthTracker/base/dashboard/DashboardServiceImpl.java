@@ -9,6 +9,8 @@ import java.text.NumberFormat;
 import java.io.IOException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wyminnie.healthtracker.base.SleepDTO;
 import com.wyminnie.healthtracker.base.fitbit.FitbitFetchService;
 import com.wyminnie.healthtracker.base.fitbit.FitbitHRVInterval;
 import com.wyminnie.healthtracker.base.user.User;
@@ -28,11 +31,17 @@ import com.wyminnie.healthtracker.base.user.User;
 import reactor.core.publisher.Mono;
 import static com.wyminnie.healthtracker.common.Utils.getPreviousDate;
 import static com.wyminnie.healthtracker.common.Utils.getPreviousWeekDate;
+import static com.wyminnie.healthtracker.common.Utils.getToday;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private FitbitFetchService fitbitFetchService;
+
+    private static final double[][] bmiDistribution = {
+            { 5.7, 42.9, 20.8, 37.5 }, // Female
+            { 14.4, 51, 15.9, 15.5 } // Male
+    };
 
     @Override
     public Map<String, Integer> getPreviousWeekHeartRateVariability(User user) {
@@ -103,21 +112,17 @@ public class DashboardServiceImpl implements DashboardService {
             bmiDTO.setBmi(bmi);
         }
 
-        if (bmi < 18.5) {
-            bmiDTO.setBmiCategory("Underweight");
-        } else if (bmi >= 18.5 && bmi < 24.9) {
-            bmiDTO.setBmiCategory("Normal");
-        } else if (bmi >= 25 && bmi < 29.9) {
-            bmiDTO.setBmiCategory("Overweight");
-        } else {
-            bmiDTO.setBmiCategory("Obese");
-        }
+        String category = getBMICategory(bmi);
+        bmiDTO.setBmiCategory(category);
+
+        int ranking = calculateBMIRanking(user.getGender(), category);
+        bmiDTO.setBmiRanking(ranking);
 
         return bmiDTO;
     }
 
     @Override
-    public byte[] getSharing(String username, Integer steps, Integer days, String date) throws IOException {
+    public byte[] getSharing(String username, Integer steps, String date) throws IOException {
 
         BufferedImage backgroundImage = loadBackgroundImage(
                 "src/main/java/com/wyminnie/healthtracker/base/dashboard/walk_template.jpg");
@@ -150,23 +155,15 @@ public class DashboardServiceImpl implements DashboardService {
         g2d.setFont(font_text);
         g2d.setColor(Color.BLACK);
 
-        if (days > 1) {
-            String text_text_days = "for " + days + " days";
-            int x_text_days = 340;
-            int y_text_days = 830;
-            g2d.drawString(text_text_days, x_text_days, y_text_days);
+        String text_text_days = "for a week";
+        int x_text_days = 340;
+        int y_text_days = 830;
+        g2d.drawString(text_text_days, x_text_days, y_text_days);
 
-            String text_text_date = "since " + date;
-            int x_text_date = 250;
-            int y_text_date = 950;
-            g2d.drawString(text_text_date, x_text_date, y_text_date);
-        } else {
-
-            String text_text = "on " + date;
-            int x_text = 300;
-            int y_text = 950;
-            g2d.drawString(text_text, x_text, y_text);
-        }
+        String text_text_date = "since " + date;
+        int x_text_date = 250;
+        int y_text_date = 950;
+        g2d.drawString(text_text_date, x_text_date, y_text_date);
 
         Font font_name = new Font("Arial", Font.ITALIC, 60);
         g2d.setFont(font_name);
@@ -190,5 +187,118 @@ public class DashboardServiceImpl implements DashboardService {
     private static BufferedImage loadBackgroundImage(String imagePath) throws IOException {
         File file = new File(imagePath);
         return ImageIO.read(file);
+    }
+
+    public int calculateBMIRanking(String sex, String category) {
+        int sexIndex = sex.equalsIgnoreCase("female") ? 0 : 1;
+
+        int categoryIndex = -1;
+        switch (category) {
+            case "Underweight":
+                categoryIndex = 0;
+                break;
+            case "Normal":
+                categoryIndex = 1;
+                break;
+            case "Overweight":
+                categoryIndex = 2;
+                break;
+            case "Obese":
+                categoryIndex = 3;
+                break;
+            default:
+                break;
+        }
+
+        double[] categoryDistribution = bmiDistribution[sexIndex];
+
+        int ranking = 0;
+        for (int i = 0; i < categoryIndex; i++) {
+            ranking += categoryDistribution[i];
+        }
+
+        return 100 - ranking;
+    }
+
+    private String getBMICategory(double bmiValue) {
+        if (bmiValue < 18.5) {
+            return "Underweight";
+        } else if (bmiValue < 23) {
+            return "Normal";
+        } else if (bmiValue < 25) {
+            return "Overweight";
+        } else {
+            return "Obese";
+        }
+
+    }
+
+    @Override
+    public SleepDTO getSleepData(User user) throws SleepDataAbsentException, FitbitFailException {
+
+        SleepDTO sleepDTO = new SleepDTO();
+
+        try {
+            String argument = fitbitFetchService.getDataBySingleDateURL("sleep", getToday());
+
+            Mono<String> fitbitSleepDataMono = fitbitFetchService.getStepsbyDate(user.getAccessToken(),
+                    argument);
+
+            String fitbitSleepData = fitbitSleepDataMono.block();
+
+            if (fitbitSleepData != null) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode sleepDataNode = objectMapper.readTree(fitbitSleepData);
+                JsonNode sleepArrayNode = sleepDataNode.path("sleep");
+                if (sleepArrayNode.isArray() && sleepArrayNode.size() > 0) {
+
+                    // Retrive Main Sleep record
+                    JsonNode mainSleepNode = null;
+                    for (JsonNode sleepNode : sleepArrayNode) {
+                        if (sleepNode.path("isMainSleep").asBoolean()) {
+                            mainSleepNode = sleepNode;
+                            break;
+                        }
+                    }
+
+                    if (mainSleepNode != null) {
+                        int durationMillis = mainSleepNode.path("duration").asInt();
+                        int efficiency = mainSleepNode.path("efficiency").asInt();
+
+                        String startTimeString = mainSleepNode.path("startTime").asText();
+                        String endTimeString = mainSleepNode.path("endTime").asText();
+
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                        LocalDateTime startTime = LocalDateTime.parse(startTimeString, formatter);
+                        LocalDateTime endTime = LocalDateTime.parse(endTimeString, formatter);
+
+                        // Convert duration from milliseconds to hours and minutes
+                        int durationMinutes = durationMillis / (1000 * 60);
+                        int hours = durationMinutes / 60;
+                        int minutes = durationMinutes % 60;
+                        String durationString = hours + " hours " + minutes + " minutes";
+
+                        sleepDTO.setSleepEfficiency(efficiency);
+                        sleepDTO.setSleepDuration(durationString);
+                        sleepDTO.setSleepEfficiency(efficiency);
+                        sleepDTO.setStartTime(startTime);
+                        sleepDTO.setEndTime(endTime);
+
+                        return sleepDTO;
+                    } else {
+                        throw new SleepDataAbsentException();
+                    }
+                } else {
+                    throw new SleepDataAbsentException();
+                }
+
+            } else {
+                throw new SleepDataAbsentException();
+            }
+        } catch (JsonProcessingException e) {
+            throw new FitbitFailException();
+        } catch (SleepDataAbsentException e) {
+            throw new SleepDataAbsentException();
+        }
     }
 }

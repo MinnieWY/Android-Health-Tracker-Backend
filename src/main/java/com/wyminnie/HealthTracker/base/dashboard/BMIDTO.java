@@ -6,5 +6,6 @@ import lombok.Data;
 public class BMIDTO {
     private double bmi;
     private String bmiCategory;
+    private int bmiRanking;
 
 }

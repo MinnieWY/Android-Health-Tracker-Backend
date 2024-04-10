@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import jakarta.annotation.PostConstruct;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -37,6 +36,14 @@ public class FitbitFetchService {
                 .bodyToMono(String.class);
     }
 
+    public Mono<String> getSleepbyDate(String accessToken, String argument) {
+        return webClient.get()
+                .uri(argument)
+                .headers(headers -> headers.setBearerAuth(accessToken))
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
     public String getDataBySingleDateURL(String type, String date) {
         String argument = "";
         switch (type) {
@@ -45,6 +52,9 @@ public class FitbitFetchService {
                 break;
             case "steps":
                 argument = "activities/date/" + date + ".json";
+                break;
+            case "sleep":
+                argument = "sleep/date/" + date + ".json";
                 break;
             default:
                 break;

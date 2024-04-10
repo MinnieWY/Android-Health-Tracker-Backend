@@ -13,4 +13,8 @@ public class Utils {
         LocalDate currentDate = LocalDate.now();
         return currentDate.minusDays(7).toString();
     }
+
+    public static String getToday() {
+        return LocalDate.now().toString();
+    }
 }

@@ -11,6 +11,7 @@ public class UserInfoDTO {
     private String height;
     private String weight;
     private String preference;
+    private int point;
 
     public static UserInfoDTO from(User entity) {
         UserInfoDTO dto = new UserInfoDTO();
@@ -21,6 +22,7 @@ public class UserInfoDTO {
         dto.height = Float.toString(entity.getHeight());
         dto.weight = Float.toString(entity.getWeight());
         dto.preference = entity.getPreference();
+        dto.point = entity.getPoint();
 
         return dto;
     }

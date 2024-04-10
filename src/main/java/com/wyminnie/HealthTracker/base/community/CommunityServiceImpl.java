@@ -48,7 +48,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public QuestionDTO getTodayQuestion() {
 
-        Date currentDate = Date.valueOf(LocalDate.now());
+        LocalDate currentDate = LocalDate.now();
         Question questions = questionRepository.findOneByDate(currentDate);
         QuestionDTO questionDTO = new QuestionDTO();
         questionDTO.setQuestion(questions.getQuestionText());

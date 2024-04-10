@@ -8,6 +8,5 @@ import lombok.Data;
 public class CompleteRecordDTO {
     String userId;
     Integer steps;
-    Integer days;
     String startDate;
 }

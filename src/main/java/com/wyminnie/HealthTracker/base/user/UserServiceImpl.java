@@ -134,25 +134,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
+    public boolean changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
             throws PasswordMismatchedException, UserNotFoundException {
         User user = userRepository.findById(Long.valueOf(changePasswordRequestDTO.getUserId())).orElse(null);
         if (user == null) {
             throw new UserNotFoundException();
         }
-        if (verifyUserCredentials(user, changePasswordRequestDTO.getOldPassword())) {
+        if (!verifyUserCredentials(user, changePasswordRequestDTO.getCurrentPassword())) {
             throw new PasswordMismatchedException();
         }
         user.setPassword(changePasswordRequestDTO.getNewPassword());
         userRepository.save(user);
+        return true;
     }
 
     @Override
     public Optional<UserDTO> editUser(UserInfoDTO userDTO)
             throws DuplicateUsernameException, UserValidException, Exception {
-        if (StringUtils.hasText(userDTO.getUsername()) || StringUtils.hasText(userDTO.getEmail())
-                || StringUtils.hasText(userDTO.getPreference()) || StringUtils.hasText(userDTO.getGender())
-                || StringUtils.hasText(userDTO.getHeight()) || StringUtils.hasText(userDTO.getWeight())) {
+        if (!StringUtils.hasText(userDTO.getUsername()) || !StringUtils.hasText(userDTO.getEmail())
+                || !StringUtils.hasText(userDTO.getPreference()) || !StringUtils.hasText(userDTO.getGender())
+                || !StringUtils.hasText(userDTO.getHeight()) || !StringUtils.hasText(userDTO.getWeight())) {
             throw new UserValidException();
         }
 
@@ -181,9 +182,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO resetPassword(User user, String newPassword) {
+    public User resetPassword(User user, String newPassword) {
         user.setPassword(newPassword);
-        User savedUser = userRepository.saveAndFlush(user);
-        return UserDTO.from(savedUser);
+        return userRepository.saveAndFlush(user);
     }
 }

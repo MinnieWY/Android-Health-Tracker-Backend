@@ -33,22 +33,12 @@ public class RecommendationServiceImpl implements RecommendationService {
         materialDTO.setId(selectedMaterial.getId());
         materialDTO.setName(selectedMaterial.getName());
         materialDTO.setType(selectedMaterial.getType());
+        materialDTO.setContent(selectedMaterial.getContent());
+        materialDTO.setUrl(selectedMaterial.getUrl());
+        materialDTO.setDescription(selectedMaterial.getShortDescription());
 
-        switch (materialDTO.getType()) {
-            case "article":
-                materialDTO.setContent(selectedMaterial.getContent());
-                break;
-            case "video":
-                materialDTO.setDescription(selectedMaterial.getShortDescription());
-                materialDTO.setUrl(selectedMaterial.getUrl());
-                break;
-            case "soundtrack":
-                materialDTO.setDescription(selectedMaterial.getShortDescription());
-                break;
-            default:
-                break;
-        }
         return materialDTO;
+
     }
 
     @Override

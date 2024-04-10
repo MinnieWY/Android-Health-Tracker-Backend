@@ -1,5 +1,7 @@
 package com.wyminnie.healthtracker.base.stress;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +17,7 @@ public class Stress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
-    private String date;
+    private LocalDate date;
     private int stressLevel;
     private int month;
     private int year;

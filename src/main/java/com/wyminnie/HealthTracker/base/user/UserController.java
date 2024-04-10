@@ -15,7 +15,6 @@ import com.wyminnie.healthtracker.base.fitbit.FitbitOAuthService;
 
 import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
 import static com.wyminnie.healthtracker.common.ControllerUtils.passwordMismatched;
-import static com.wyminnie.healthtracker.common.ControllerUtils.permissionDenied;
 import static com.wyminnie.healthtracker.common.ControllerUtils.duplicatedUsername;
 import static com.wyminnie.healthtracker.common.ControllerUtils.notFound;
 import static com.wyminnie.healthtracker.common.ControllerUtils.serverError;
@@ -105,8 +104,7 @@ public class UserController {
     @PostMapping("/changePassword")
     public Object changePassword(@RequestBody ChangePasswordRequestDTO dto) {
         try {
-            userService.changePassword(dto);
-            return ok(true);
+            return ok(userService.changePassword(dto));
         } catch (PasswordMismatchedException e) {
             return passwordMismatched();
         } catch (UserNotFoundException e) {

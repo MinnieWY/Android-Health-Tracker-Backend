@@ -3,15 +3,12 @@ package com.wyminnie.healthtracker.base.dashboard;
 import java.io.IOException;
 import java.util.Map;
 
+import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import com.wyminnie.healthtracker.base.user.User;
 import com.wyminnie.healthtracker.base.user.UserService;
@@ -19,7 +16,9 @@ import com.wyminnie.healthtracker.common.UserIDDTO;
 
 import static com.wyminnie.healthtracker.common.ControllerUtils.notFound;
 import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
+import static com.wyminnie.healthtracker.common.ControllerUtils.serverError;
 import static com.wyminnie.healthtracker.common.ControllerUtils.fail;
+import static com.wyminnie.healthtracker.common.ControllerUtils.ERR_SERVER_ERROR;
 
 @RequestMapping("/dashboard")
 @RestController
@@ -45,7 +44,7 @@ public class DashboardController {
             return ok(dashboardDTO);
 
         } catch (Exception e) {
-            return fail("SERVER_ERROR");
+            return fail(ERR_SERVER_ERROR);
         }
     }
 
@@ -73,9 +72,26 @@ public class DashboardController {
         try {
 
             return ok(dashboardService.getSharing(user.getUsername(), completeRecordDTO.getSteps(),
-                    completeRecordDTO.getDays(), completeRecordDTO.getStartDate()));
-        } catch (Error | IOException e) {
-            return fail("SERVER_ERROR");
+                    completeRecordDTO.getStartDate()));
+        } catch (Exception e) {
+            return serverError();
         }
     }
+
+    @PostMapping("/sleep")
+    public Object getSleepData(@RequestBody UserIDDTO userIDDTO) {
+        User user = userService.findByUserId(Long.valueOf(userIDDTO.getUserId()));
+        if (user == null) {
+            return notFound();
+        }
+
+        try {
+            return ok(dashboardService.getSleepData(user));
+        } catch (SleepDataAbsentException e) {
+            return fail("SLEEP_DATA_ABSENT");
+        } catch (FitbitFailException e) {
+            return serverError();
+        }
+    }
+
 }

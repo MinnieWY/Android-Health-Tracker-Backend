@@ -31,8 +31,8 @@ public class StressController {
         try {
             return ok(stressService.createStressRecord(user.getId(), stressInputDTO.getDate(),
                     stressInputDTO.getStressLevel()));
-        } catch (Exception e) {
-            return fail("ERROR_STRESS_RECORD_FAILED");
+        } catch (StressRecordAlreadyExist e) {
+            return fail("ERROR_STRESS_RECORD_EXIST");
         }
     }
 
@@ -62,14 +62,16 @@ public class StressController {
         }
     }
 
-    @PostMapping("/weekly")
-    public Object getPreviousWeekStress(@RequestBody UserIDDTO userIDDTO) {
+    @PostMapping("/trend")
+    public Object getStressTrend(@RequestBody UserIDDTO userIDDTO) {
         User user = userService.findByUserId(Long.valueOf(userIDDTO.getUserId()));
         if (user == null) {
             return notFound();
         }
         try {
-            return ok(stressService.getPreviousWeekStress(user.getId()));
+            return ok(stressService.getStresTrend(user.getId()));
+        } catch (NoStressRecordException e) {
+            return fail("ERROR_NO_STRESS_RECORD");
         } catch (Exception e) {
             return fail("ERROR_GET_WEEKLY_STRESS_FAILED");
         }
@@ -94,7 +96,7 @@ public class StressController {
         User user = userService.findByUserId(Long.valueOf(userIddto.getUserId()));
 
         try {
-            return ok(stressService.predictStressLevel(user.getAccessToken()));
+            return ok(stressService.predictStressLevel(user.getId(), user.getAccessToken()));
         } catch (MLFailedException e) {
             return fail(e.getMessage());
         }

@@ -22,6 +22,7 @@ public class UserDTO {
             dto.prefernce = entity.getPreference();
         }
         dto.point = entity.getPoint();
+        dto.point = entity.getPoint();
         return dto;
     }
 }

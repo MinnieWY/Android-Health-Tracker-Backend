@@ -1,6 +1,6 @@
 package com.wyminnie.healthtracker.base.community;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,5 +37,5 @@ public class Question {
     private String option4;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 }

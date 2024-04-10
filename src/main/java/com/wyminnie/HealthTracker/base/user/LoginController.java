@@ -1,18 +1,14 @@
 package com.wyminnie.healthtracker.base.user;
 
-import java.util.Optional;
+import static com.wyminnie.healthtracker.common.ControllerUtils.notFound;
+import static com.wyminnie.healthtracker.common.ControllerUtils.serverError;
+import static com.wyminnie.healthtracker.common.ControllerUtils.ok;
+import static com.wyminnie.healthtracker.common.ControllerUtils.passwordMismatched;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.wyminnie.healthtracker.common.ControllerUtils;
 
 @RestController
 public class LoginController {
@@ -25,13 +21,13 @@ public class LoginController {
         User loginUser = userService.findByUsername(userLoginDto.getUsername()).orElse(null);
 
         if (loginUser == null) {
-            return ControllerUtils.passwordMismatched();
+            return passwordMismatched();
         } else {
             if (userService.verifyUserCredentials(loginUser,
                     userLoginDto.getPassword())) {
-                return ControllerUtils.ok(userService.updateAccessToken(loginUser));
+                return ok(userService.updateAccessToken(loginUser));
             } else {
-                return ControllerUtils.passwordMismatched();
+                return passwordMismatched();
             }
         }
     }
@@ -41,10 +37,13 @@ public class LoginController {
         User requestUser = userService.findByEmail(forgetPasswordDTO.getEmail()).orElse(null);
 
         if (requestUser == null) {
-            return ControllerUtils.userNotFound();
-        } else {
-            UserDTO loginUser = userService.resetPassword(requestUser, forgetPasswordDTO.getNewPassword());
-            return ControllerUtils.ok(loginUser);
+            return notFound();
+        }
+        try {
+            User renewedUser = userService.resetPassword(requestUser, forgetPasswordDTO.getNewPassword());
+            return ok(userService.updateAccessToken(renewedUser));
+        } catch (Exception e) {
+            return serverError();
         }
     }
 

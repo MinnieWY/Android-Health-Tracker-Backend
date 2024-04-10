@@ -31,10 +31,10 @@ public interface UserService {
 
         public UserDTO updateAccessToken(User user);
 
-        void changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
+        boolean changePassword(ChangePasswordRequestDTO changePasswordRequestDTO)
                         throws PasswordMismatchedException, UserNotFoundException;
 
         Optional<User> findByEmail(String email);
 
-        UserDTO resetPassword(User user, String newPassword);
+        User resetPassword(User user, String newPassword);
 }

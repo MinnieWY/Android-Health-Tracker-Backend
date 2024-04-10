@@ -17,3 +17,5 @@ The project consists of four major components
 4. Install `SpringBoot Dashboard` plugin
 6. Open the plugin and click the `Run` button
 7. Waiit until the application started
+
+An installation guide with screenshots is attached: [BackendInstallationGuide.pdf](https://github.com/MinnieWY/Android-Health-Tracker-Backend/blob/main/BackendInstallationGuide.pdf)

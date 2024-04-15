@@ -11,6 +11,9 @@ The project consists of four major components
 4. Database
 
 ## Installation and Setup
+
+The running of application requires a Maria DB connection. Set it up before running.
+
 1. Clone and fetch the repository with the `main` branch
 2. Open the folder using VS code (or Springboot version Eclipse)
 3. Update flask-based machine learning API server location in Line 27 of  `StressServiceImpl.java`

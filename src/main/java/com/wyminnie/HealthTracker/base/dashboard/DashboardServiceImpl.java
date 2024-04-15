@@ -100,7 +100,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public BMIDTO getBMI(User user) throws ProfileNotCompleteException, BMIInvalidException {
         if (user.getWeight() == 0 || user.getHeight() == 0) {
-            return null;
+            throw new ProfileNotCompleteException();
         }
         BMIDTO bmiDTO = new BMIDTO();
         double denominator = (user.getHeight() / 100) * (user.getHeight() / 100);
@@ -217,7 +217,7 @@ public class DashboardServiceImpl implements DashboardService {
             ranking += categoryDistribution[i];
         }
 
-        return 100 - ranking;
+        return ranking + 1;
     }
 
     private String getBMICategory(double bmiValue) {
